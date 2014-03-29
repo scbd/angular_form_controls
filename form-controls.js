@@ -4,10 +4,11 @@ angular.module('formControls',[])
 	//
 	//
 	//============================================================
+	//NOTE: Requires a user!
 	.directive('kmNotes',  function ($http, $filter) {
 	    return {
 	        restrict: 'EAC',
-	        templateUrl: '/app/shared/directives/forms/km-notes.html',
+	        templateUrl: '/km-notes.html',
 	        replace: true,
 	        transclude: false,
 	        require: "?ngModel",
@@ -104,7 +105,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/app/shared/directives/forms/km-inputtext-ml.html',
+			templateUrl: '/km-inputtext-ml.html',
 			replace: true,
 			require : "?ngModel",
 			scope: {
@@ -201,7 +202,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/app/shared/directives/forms/km-inputtext-list.html',
+			templateUrl: '/km-inputtext-list.html',
 			replace: true,
 			transclude: false,
 			require : "?ngModel",
@@ -307,7 +308,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-//			templateUrl: '/app/shared/directives/forms/km-terms.html',
+//			templateUrl: '/km-terms.html',
 			replace: false,
 //			transclude: true,
 			scope: {
@@ -318,7 +319,7 @@ angular.module('formControls',[])
 				$scope.terms = [];
 				$scope.$watch('binding', $scope.load);
 			},
-			controller: ["$scope", "$q", "underscore", function ($scope, $q, _) 
+			controller: ["$scope", "$q",function ($scope, $q) 
 			{
 				//==============================
 				//
@@ -370,7 +371,7 @@ angular.module('formControls',[])
 	.directive('kmTermCheck', function ($http) {
 		return {
 			restrict: 'EAC',
-			templateUrl: '/app/shared/directives/forms/km-terms-check.html',
+			templateUrl: '/km-terms-check.html',
 			replace: true,
 			transclude: false,
 			require : "?ngModel",
@@ -533,7 +534,7 @@ angular.module('formControls',[])
 	.directive('kmTermRadio', function ($http) {
 		return {
 			restrict: 'EAC',
-			templateUrl: '/app/shared/directives/forms/km-terms-radio.html',
+			templateUrl: '/km-terms-radio.html',
 			replace: true,
 			transclude: false,
 			require : "?ngModel",
@@ -684,7 +685,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/app/shared/directives/forms/km-link.html',
+			templateUrl: '/km-link.html',
 			replace: true,
 			transclude: false,
 			require : "?ngModel",
@@ -1058,7 +1059,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/app/shared/directives/forms/km-reference.html',
+			templateUrl: '/km-reference.html',
 			replace: false,
 			transclude: true,
 			require : "?ngModel",
@@ -1090,7 +1091,7 @@ angular.module('formControls',[])
 					if(_new!=_old && !_new) $element.find("#editReference").modal("hide");
 				});
 			},
-			controller: ["$scope", "authHttp", "underscore", function ($scope, $http, _) 
+			controller: ["$scope", function ($scope) 
 			{
 				$scope.editor = {};
 
@@ -1297,11 +1298,11 @@ angular.module('formControls',[])
 	//
 	//
 	//============================================================
-	.directive('kmSelect', ["underscore", "htmlUtility", function (_, html) 
+	.directive('kmSelect', function () 
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/app/shared/directives/forms/km-select.html',
+			templateUrl: '/km-select.html',
 			replace: true,
 			transclude: false,
 			require : "?ngModel",
@@ -1352,7 +1353,7 @@ angular.module('formControls',[])
 						placement:"top",
 						content: function() {
 							var oNames = _.map($scope.getTitles(), function(o) {
-								return html.encode(o)
+								return $('div').append(o).get(0);
 							});
 
 							if (!oNames || !oNames.length)
@@ -1362,7 +1363,7 @@ angular.module('formControls',[])
 						}
 					});
 			},
-			controller: ["$scope", "$q","$filter", "$timeout", "underscore", function ($scope, $q, $filter, $timeout, _) 
+			controller: ["$scope", "$q","$filter", "$timeout", function ($scope, $q, $filter, $timeout) 
 			{
 				//==============================
 				//
@@ -1656,7 +1657,7 @@ angular.module('formControls',[])
 				}
 			}]
 		}
-	}])
+	})
 
 
 	//============================================================
@@ -1667,7 +1668,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/app/shared/directives/forms/km-yes-no.html',
+			templateUrl: '/km-yes-no.html',
 			replace: true,
 			transclude: false,
 			scope: {
@@ -1685,7 +1686,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/app/shared/directives/forms/km-date.html',
+			templateUrl: '/km-date.html',
 			replace: true,
 			transclude: false,
 			scope: {
@@ -1759,7 +1760,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/app/shared/directives/forms/km-form-std-buttons.html',
+			templateUrl: '/km-form-std-buttons.html',
 			replace: true,
 			transclude: true,
 			scope: {
@@ -2076,6 +2077,7 @@ angular.module('formControls',[])
 	//
 	//
 	//============================================================
+	//TODO: out of date, needs to be updated with current select, or select needs to be updated.
 	.directive('kmFormLanguages', ["$q", function ($q)
 	{
 		return {
@@ -2112,7 +2114,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/app/shared/directives/forms/km-document-validation.html',
+			templateUrl: '/km-document-validation.html',
 			replace: true,
 			transclude: true,
 			scope: {
@@ -2232,7 +2234,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/app/shared/directives/forms/km-control-group.html',
+			templateUrl: '/km-control-group.html',
 			replace: true,
 			transclude: true,
 			scope: {
@@ -2256,7 +2258,7 @@ angular.module('formControls',[])
 					}
 				}
 			},
-			controller: ["$scope", "underscore", function ($scope, _) 
+			controller: ["$scope", function ($scope) 
 			{
 				$scope.hasWarning = function() {  //default behavior
 
