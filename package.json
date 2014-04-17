@@ -1,0 +1,23 @@
+{
+  "name": "angular_form_controls",
+  "version": "0.1.0",
+  "description": "A collection of angular directives for initiating form controls.",
+  "main": "demo/demo.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/scbd/angular_form_controls.git"
+  },
+  "keywords": [
+    "angular",
+    "forms",
+    "inputs"
+  ],
+  "author": "CDB",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/scbd/angular_form_controls/issues"
+  }
+}
