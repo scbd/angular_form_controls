@@ -2286,5 +2286,42 @@ angular.module('formControls',[])
 			}]
 		};
 	})
-
+  .directive('inputstring', function () {
+    return {
+      restrict: 'E',
+      scope: {
+        binding: '=',
+        title: '@',
+        placeholder: '@',
+        help: '@',
+      },
+      templateUrl: '/string.html',
+    };
+  })
+  .directive('inputtext', function() {
+    return {
+      restrict: 'E',
+      scope: {
+        binding: '=',
+        title: '@',
+        placeholder: '@',
+        rows: '@',
+        help: '@',
+      },
+      templateUrl: '/text.html',
+    };
+  })
+  .directive('inputoptions', function() {
+    return {
+      restrict: 'AEC',
+      scope: {
+        dataBinding: '=',
+        options: '=',
+        title: '@',
+        placeholder: '@',
+        help: '@',
+      },
+      templateUrl: '/options.html',
+    };
+  })
 ;
