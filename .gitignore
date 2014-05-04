@@ -1,3 +1,5 @@
 TODO
 .DS_STORE
 *.swp
+bower_components
+*.log

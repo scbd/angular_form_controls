@@ -1,4 +1,5 @@
 angular.module('formControls',[])
+
 	
 	//============================================================
 	//
@@ -349,7 +350,7 @@ angular.module('formControls',[])
 								else
 									identifier = value.identifier;
 
-								qTerms.push($http.get("/api/v2013/thesaurus/terms/"+encodeURI(identifier),  {cache:true}).then(function(o) {
+								qTerms.push($http.get("http://api.cbd.int/api/v2013/thesaurus/"+encodeURI(identifier),  {cache:true}).then(function(o) {
 									return _.extend(_.clone(o.data),  _.omit(value, "identifier", "title"));
 								}));
 							}
@@ -2288,9 +2289,9 @@ angular.module('formControls',[])
 	})
   .directive('inputstring', function () {
     return {
-      restrict: 'E',
+      restrict: 'EAC',
       scope: {
-        binding: '=',
+		  binding: "=ngModel",
         title: '@',
         placeholder: '@',
         help: '@',
@@ -2300,9 +2301,9 @@ angular.module('formControls',[])
   })
   .directive('inputtext', function() {
     return {
-      restrict: 'E',
+      restrict: 'EAC',
       scope: {
-        binding: '=',
+		  binding: "=ngModel",
         title: '@',
         placeholder: '@',
         rows: '@',
@@ -2315,7 +2316,7 @@ angular.module('formControls',[])
     return {
       restrict: 'AEC',
       scope: {
-        dataBinding: '=',
+		  binding: "=ngModel",
         options: '=',
         title: '@',
         placeholder: '@',
@@ -2323,5 +2324,61 @@ angular.module('formControls',[])
       },
       templateUrl: '/options.html',
     };
+  })
+	//TODO: switch binding to ngModel... because it's dumb to use another name
+  .directive('tabbedTextareas', function($timeout) {
+	  return {
+		  restrict: 'AEC',
+  			scope: {
+			  binding: "=ngModel",
+			  tabs: "=",
+  			  tabindex: "@",
+  			  rows: "@",
+  			  hideUnfocused: "@",
+			},
+  			templateUrl: '/tabbed-textareas.html',
+  			controller: function($scope, $element, $attrs, $transclude) {
+				//TODO: this initialization is hacky and will probably fall apart when part of an object is defined, but not the whole part. ie. isValid will fail.
+				if(typeof $scope.binding === 'undefined') {
+	  				$scope.binding = {};
+					for(var i=0; i!=$scope.tabs.length; ++i)
+	  					$scope.binding[$scope.tabs[i].key] = '';
+				}
+			   else if(typeof $scope.binding !== 'object') {
+					var message = "Tabbed Textarea's ngModel binding requires an object or nothing. No other types are allowed, to ensure a value isn't improperly overwritten. Binding: ";
+	  				console.log(message, $scope.binding);
+	  				throw message + $scope.binding;
+				}
+
+  				$scope.isValid = function(key) {
+					return ($scope.binding[key] && $scope.binding[key].length > 20);
+				};
+
+  				$scope.showTab = function($event, $index, key) {
+					var root = $($event.target).parent().parent().parent();
+
+					root.find('.tabbed-textarea').not('.tab'+key).hide();
+					root.find('.tab'+key).show().focus();
+					root.find('.atab').removeClass('active');
+					root.find('.'+$index+'th-tab').addClass('active');
+				};
+				$scope.overwriteKeys = function($event, $index) {
+					var root = $($event.target).parent().parent().parent();
+
+					if($event.which == 9) {
+						$timeout(function() {
+							root.find('.'+($index + 1)+'th-button').focus();
+						});
+					}
+				};
+				$scope.maybeHide = function($event, $index) {
+					if($scope.hideUnfocused == 'true') {
+						$($event.target).hide();
+						//TODO: change all this parent.parent jazz, with ancestor based on class, so the html structure won't break everything
+						$($event.target).parent().parent().parent().find('.'+$index+'th-tab').removeClass('active');
+					}
+				};
+			},
+	  };
   })
 ;

@@ -6,14 +6,34 @@
 		<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js"></script>
 		<script src="../form-controls.js"></script>
+		<script src="../bower_components/ng-tags-input/ng-tags-input.js"></script>
 		<script src="demo.js"></script>
 		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+		<link href="http://cdnjs.cloudflare.com/ajax/libs/ng-tags-input/2.0.1/ng-tags-input.css" rel="stylesheet">
 	</head>
 	<body ng-controller="DemoController">
 		<div id="notFooter" style="margin-bottom: 250px;">
-			<form>
+			<form novalidate>
 				<h1>{{demoTitle}}</h1>
 				<h3>Requirements: Angular, underscore</h3>
+
+				<input />
+				<br />
+				<h4>tabbed-textareas</h4>
+				<tabbed-textareas hide-unfocused="true" rows="2" ng-model="demoObject.openArray[3]" tabs="inputs.tabs"></tabbed-textareas>
+				<br />
+				<input />
+
+				<h4>ng-tags-input</h4>
+				<tags-input ng-model="demoObject.openArray[2]">
+					<auto-complete source="tagOptions($query)" min-length="1" debounce-delay="0" hide-unmatched="true" auto-highlight-single="true"></auto-complete>
+				</tags-input>
+
+				<h4>Time Input</h4>
+				<input type="time" ng-model="demoObject.openArray[1]" /><br />
+
+				<h4>Date Input</h4>
+				<input type="date" ng-model="demoObject.openArray[0]" /><br />
 
 				<h4>inputstring</h4>
 				<h5>Very basic input</h5>
@@ -42,35 +62,6 @@
 				<h5>Creates a new input box as soon as there is content in the last input (BEWARE: it currently needs to be enclosed in a div or it will gobble all following html)</h5>
 				<div><km-inputtext-list placeholder="a placeholder" ng-model="demoObject.open3"><km-inputtext-list></div>
 
-				<!-- I have no idea how to use this, it isn't a replace directive
-				<h4>kmTerms</h4>
-				<km-terms ng-model="demoObject.open1"></km-terms>
-				-->
-
-				<!-- No idea. Has something to do with terms?
-				<h4>kmTermCheck</h4>
-				<km-term-check ng-model="demoObject.open2"></km-term-check>
-				-->
-
-				<!-- again with the terms
-				<h4>kmTermRadio</h4>
-				<km-term-radio ng-model="demoObject.open3"></km-term-radio>
-				-->
-
-				<!-- requires km-storage.js and IStorage. TODO: decouple
-				<h4>kmLink</h4>
-				<km-link ng-model="demoObject.open1"></km-link>
-				-->
-
-				<!--TODO: add loader function-->
-				<h4>kmReference</h4>
-				<h5>Requires a loader function to operate</h5>
-				<km-reference ng-model="demoObject.open2"></km-reference>
-
-				<!--TODO: allow taking an object or array of object -->
-				<h4>kmSelect</h4>
-				<km-select ng-model="demoObject.open3"></km-select>
-
 				<h4>kmYesNo</h4>
 				<km-yes-no ng-model="demoObject.open2"></km-yes-no>
 
@@ -78,8 +69,34 @@
 				<h4>kmDate</h4>
 				<km-date ng-model="demoObject.open1"></km-select>
 
-				<!-- not sure how this one is used -->
-				<!--
+				<!-- These all are based on ng-model set to some object of thesaurus items that i have no idea would qualify as correct. Need tog et list from Stephane.
+				<h4>kmTerms</h4>
+				<km-terms ng-model="demoObject.terms"></km-terms>
+
+				<h4>kmTermCheck</h4>
+				<km-term-check ng-model="demoObject.open2"></km-term-check>
+
+				<h4>kmTermRadio</h4>
+				<km-term-radio ng-model="demoObject.open3"></km-term-radio>
+
+
+				<h4>kmSelect</h4>
+				<km-select ng-model="demoObject.open3"></km-select>
+				-->
+
+				<!-- requires km-storage.js and IStorage. TODO: decouple
+				<h4>kmLink</h4>
+				<km-link ng-model="demoObject.open1"></km-link>
+				-->
+
+				<!-- Tied into records.
+				<h4>kmReference</h4>
+				<h5>Requires a loader function to operate</h5>
+				<km-reference ng-model="demoObject.open2"></km-reference>
+				-->
+
+
+				<!-- Specific to clearing house
 				<h4>kmFormStdButtons</h4>
 				<km-form-std-buttons></km-form-std-buttons>
 				-->
@@ -89,13 +106,9 @@
 				<km-form-languages ng-model="demoObject.open2"></km-form-languages>
 				-->
 
-				<!-- no idea
+				<!-- specific to clearing house
 				<h4>kmDocumentValidation</h4>
 				<km-document-validation ng-model="demoObject.open3"></km-document-validation>
-				-->
-
-				<!-- it's used as an attribute, not sure what it's purpose is.
-				<h4>kmTab</h4>
 				-->
 			</form>
 		</div>

@@ -1,0 +1,22 @@
+<!--TODO: once i get at least one more control requiring style, I should just have a css file for all of these controls -->
+<style>
+	.tabbed-textareas-inputs > * > .tabbed-textarea {
+		display: none;
+	}
+	.tabbed-textareas-inputs > *:first-child > .tabbed-textarea {
+		display: block;
+	}
+	.tab-button.has-success {
+		background-color: #DDFFDD;
+	}
+</style>
+<ul class="nav nav-tabs">
+	<li ng-repeat="tab in tabs" class="{{$index}}th-tab atab {{$index==0?'active':''}}">
+	<a tabindex="0" class="{{$index}}th-button tab-button {{isValid(tab.key)?'has-success':''}}" ng-click="toggleTab($event, $index, tab.key)" ng-focus="showTab($event, $index, tab.key)">{{tab.title}}</a>
+	</li>
+</ul>
+<div class="tabbed-textareas-inputs">
+	<span ng-repeat="tab in tabs">
+		<textarea class="tab{{tab.key}} tabbed-textarea form-control" rows="{{rows || 4}}" ng-model="binding[tab.key]" ng-keydown="overwriteKeys($event, $index)" ng-blur="maybeHide($event, $index)"></textarea>
+	</span>
+</div>

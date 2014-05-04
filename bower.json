@@ -1,0 +1,25 @@
+{
+  "name": "angular_form_controls",
+  "version": "0.1.0",
+  "homepage": "https://github.com/scbd/angular_form_controls",
+  "authors": [
+    "Jason McCarrell <jason.abz@gmail.com>"
+  ],
+  "description": "A collection of angular directives for form controls.",
+  "main": "demo/demo.html",
+  "keywords": [
+    "angular"
+  ],
+  "dependencies": {
+		"ng-tags-input": "latest"
+  },
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
