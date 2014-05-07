@@ -2287,7 +2287,7 @@ angular.module('formControls',[])
 			}]
 		};
 	})
-  .directive('inputstring', function () {
+  .directive('afcInput', function () {
     return {
       restrict: 'EAC',
       scope: {
@@ -2303,7 +2303,7 @@ angular.module('formControls',[])
 		},
     };
   })
-  .directive('inputtext', function() {
+  .directive('afcText', function() {
     return {
       restrict: 'EAC',
       scope: {
@@ -2316,7 +2316,7 @@ angular.module('formControls',[])
       templateUrl: '/afc_template/text.html',
     };
   })
-  .directive('inputoptions', function() {
+  .directive('afcOptions', function() {
     return {
       restrict: 'AEC',
       scope: {
