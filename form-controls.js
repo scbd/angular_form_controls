@@ -2292,11 +2292,15 @@ angular.module('formControls',[])
       restrict: 'EAC',
       scope: {
 		  binding: "=ngModel",
+  		  type: '@?',
         title: '@',
         placeholder: '@',
         help: '@',
       },
       templateUrl: '/afc_template/string.html',
+  		controller: function($scope) {
+			$scope.type = $scope.type || 'text';
+		},
     };
   })
   .directive('inputtext', function() {
