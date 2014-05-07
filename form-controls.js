@@ -9,7 +9,7 @@ angular.module('formControls',[])
 	.directive('kmNotes',  function ($http, $filter) {
 	    return {
 	        restrict: 'EAC',
-	        templateUrl: '/km-notes.html',
+	        templateUrl: '/afc_template/km-notes.html',
 	        replace: true,
 	        transclude: false,
 	        require: "?ngModel",
@@ -106,7 +106,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/km-inputtext-ml.html',
+			templateUrl: '/afc_template/km-inputtext-ml.html',
 			replace: true,
 			require : "?ngModel",
 			scope: {
@@ -203,7 +203,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/km-inputtext-list.html',
+			templateUrl: '/afc_template/km-inputtext-list.html',
 			replace: true,
 			transclude: false,
 			require : "?ngModel",
@@ -309,7 +309,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-//			templateUrl: '/km-terms.html',
+//			templateUrl: '/afc_template/km-terms.html',
 			replace: false,
 //			transclude: true,
 			scope: {
@@ -372,7 +372,7 @@ angular.module('formControls',[])
 	.directive('kmTermCheck', function ($http) {
 		return {
 			restrict: 'EAC',
-			templateUrl: '/km-terms-check.html',
+			templateUrl: '/afc_template/km-terms-check.html',
 			replace: true,
 			transclude: false,
 			require : "?ngModel",
@@ -535,7 +535,7 @@ angular.module('formControls',[])
 	.directive('kmTermRadio', function ($http) {
 		return {
 			restrict: 'EAC',
-			templateUrl: '/km-terms-radio.html',
+			templateUrl: '/afc_template/km-terms-radio.html',
 			replace: true,
 			transclude: false,
 			require : "?ngModel",
@@ -686,7 +686,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/km-link.html',
+			templateUrl: '/afc_template/km-link.html',
 			replace: true,
 			transclude: false,
 			require : "?ngModel",
@@ -1060,7 +1060,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/km-reference.html',
+			templateUrl: '/afc_template/km-reference.html',
 			replace: false,
 			transclude: true,
 			require : "?ngModel",
@@ -1303,7 +1303,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/km-select.html',
+			templateUrl: '/afc_template/km-select.html',
 			replace: true,
 			transclude: false,
 			require : "?ngModel",
@@ -1669,7 +1669,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/km-yes-no.html',
+			templateUrl: '/afc_template/km-yes-no.html',
 			replace: true,
 			transclude: false,
 			scope: {
@@ -1687,7 +1687,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/km-date.html',
+			templateUrl: '/afc_template/km-date.html',
 			replace: true,
 			transclude: false,
 			scope: {
@@ -1761,7 +1761,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/km-form-std-buttons.html',
+			templateUrl: '/afc_template/km-form-std-buttons.html',
 			replace: true,
 			transclude: true,
 			scope: {
@@ -2115,7 +2115,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/km-document-validation.html',
+			templateUrl: '/afc_template/km-document-validation.html',
 			replace: true,
 			transclude: true,
 			scope: {
@@ -2235,7 +2235,7 @@ angular.module('formControls',[])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/km-control-group.html',
+			templateUrl: '/afc_template/km-control-group.html',
 			replace: true,
 			transclude: true,
 			scope: {
@@ -2296,7 +2296,7 @@ angular.module('formControls',[])
         placeholder: '@',
         help: '@',
       },
-      templateUrl: '/string.html',
+      templateUrl: '/afc_template/string.html',
     };
   })
   .directive('inputtext', function() {
@@ -2309,7 +2309,7 @@ angular.module('formControls',[])
         rows: '@',
         help: '@',
       },
-      templateUrl: '/text.html',
+      templateUrl: '/afc_template/text.html',
     };
   })
   .directive('inputoptions', function() {
@@ -2322,7 +2322,7 @@ angular.module('formControls',[])
         placeholder: '@',
         help: '@',
       },
-      templateUrl: '/options.html',
+      templateUrl: '/afc_template/options.html',
     };
   })
 	//TODO: switch binding to ngModel... because it's dumb to use another name
@@ -2336,7 +2336,7 @@ angular.module('formControls',[])
   			  rows: "@",
   			  hideUnfocused: "@",
 			},
-  			templateUrl: '/tabbed-textareas.html',
+  			templateUrl: '/afc_template/tabbed-textareas.html',
   			controller: function($scope, $element, $attrs, $transclude) {
 				//TODO: this initialization is hacky and will probably fall apart when part of an object is defined, but not the whole part. ie. isValid will fail.
 				if(typeof $scope.binding === 'undefined') {

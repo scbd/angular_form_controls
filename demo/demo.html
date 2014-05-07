@@ -33,15 +33,15 @@
 
 				<h4>inputstring</h4>
 				<h5>Very basic input</h5>
-				<inputstring binding="demoObject.open2" title="the title" placeholder="placeholder" help="some help text"></inputstring> 
+				<inputstring ng-model="demoObject.openArray[4]" title="the title" placeholder="placeholder" help="some help text"></inputstring> 
 
 				<h4>inputtext</h4>
 				<h5>Text area input</h5>
-				<inputtext binding="demoObject.open3" title="the label"></inputtext>
+				<inputtext ng-model="demoObject.openArray[5]" title="the label"></inputtext>
 
 				<h4>inputoptions</h4>
 				<h5>select input</h5>
-				<inputoptions binding="demoObject.open1" title="select an option" options="demoObject.objectOptions"></inputoptions>
+				<inputoptions ng-model="demoObject.openArray[6]" title="select an option" options="demoObject.objectOptions"></inputoptions>
 				<br />
 				<br />
 
