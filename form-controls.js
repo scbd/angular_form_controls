@@ -2362,12 +2362,14 @@ angular.module('formControls',[])
 					var root = $($event.target).parent().parent().parent();
 
 					root.find('.tabbed-textarea').not('.tab'+key).hide();
-					root.find('.tab'+key).show().focus();
+					root.find('.tab'+key).show()
+					console.log('tab key:', root.find('.tab'+key));
+					root.find('.textarea'+key).focus();
 					root.find('.atab').removeClass('active');
 					root.find('.'+$index+'th-tab').addClass('active');
 				};
 				$scope.overwriteKeys = function($event, $index) {
-					var root = $($event.target).parent().parent().parent();
+					var root = $($event.target).parent().parent().parent().parent();
 
 					if($event.which == 9) {
 						$timeout(function() {
@@ -2377,9 +2379,9 @@ angular.module('formControls',[])
 				};
 				$scope.maybeHide = function($event, $index) {
 					if($scope.hideUnfocused == 'true') {
-						$($event.target).hide();
+						$($event.target).parent().hide();
 						//TODO: change all this parent.parent jazz, with ancestor based on class, so the html structure won't break everything
-						$($event.target).parent().parent().parent().find('.'+$index+'th-tab').removeClass('active');
+						$($event.target).parent().parent().parent().parent().find('.'+$index+'th-tab').removeClass('active');
 					}
 				};
 			},
