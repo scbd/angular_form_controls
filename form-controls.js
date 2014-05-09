@@ -2363,7 +2363,6 @@ angular.module('formControls',[])
 
 					root.find('.tabbed-textarea').not('.tab'+key).hide();
 					root.find('.tab'+key).show()
-					console.log('tab key:', root.find('.tab'+key));
 					root.find('.textarea'+key).focus();
 					root.find('.atab').removeClass('active');
 					root.find('.'+$index+'th-tab').addClass('active');
