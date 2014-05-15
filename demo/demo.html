@@ -16,10 +16,6 @@
 			<form novalidate>
 				<h1>{{demoTitle}}</h1>
 				<h3>Requirements: Angular, underscore</h3>
-
-				<h4>tabbed-textareas</h4>
-				<tabbed-textareas hide-unfocused="true" rows="2" ng-model="demoObject.openArray[3]" tabs="inputs.tabs"></tabbed-textareas>
-
 				<h4>ng-tags-input</h4>
 				<tags-input ng-model="demoObject.openArray[2]">
 					<auto-complete source="tagOptions($query)" min-length="1" debounce-delay="0" hide-unmatched="true" auto-highlight-single="true"></auto-complete>
@@ -38,6 +34,10 @@
 				<h4>afc-text</h4>
 				<h5>Text area input</h5>
 				<afc-text ng-model="demoObject.openArray[5]" title="the label"></afc-text>
+
+				<h4>tabbed-textareas</h4>
+				<tabbed-textareas hide-unfocused="true" rows="2" ng-model="demoObject.openArray[3]" tabs="inputs.tabs"></tabbed-textareas>
+
 
 				<h4>afc-options</h4>
 				<h5>select input</h5>
