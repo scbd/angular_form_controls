@@ -2401,8 +2401,6 @@ angular.module('formControls',[])
 		controller: function($scope, $element, $attrs, $transclude) {
 			if(typeof $scope.binding === 'undefined')
 	  			$scope.binding = {};
-			$scope.binding.lat = 1;
-			$scope.binding.lon = 2;
 
 			var map = L.map('map', {
 				center: [30, 15],
