@@ -17,9 +17,9 @@
 </ul>
 <div class="tabbed-textareas-inputs">
 	<span ng-repeat="tab in tabs">
-		<span class="tab{{tab.key}} tabbed-textarea">
+		<span class="tab{{tab[keyKey]}} tabbed-textarea">
 			<p>{{tab[helpKey]}}</p>
-			<textarea class="form-control textarea{{tab.key}}" rows="{{rows || 4}}" ng-model="binding[tab.key]" ng-keydown="overwriteKeys($event, $index)" ng-blur="maybeHide($event, $index)"></textarea>
+			<textarea class="form-control textarea{{tab[keyKey]}}" rows="{{rows || 4}}" ng-model="binding[tab[keyKey]]" ng-keydown="overwriteKeys($event, $index)" ng-blur="maybeHide($event, $index)"></textarea>
 		</span>
 	</span>
 </div>
