@@ -2390,4 +2390,32 @@ angular.module('formControls',[])
 			},
 	  };
   })
+  .directive('lonlatInput', function() {
+    return {
+      restrict: 'AEC',
+      scope: {
+		  binding: "=ngModel",
+        help: '@',
+      },
+      templateUrl: '/afc_template/lonlat.html',
+		controller: function($scope, $element, $attrs, $transclude) {
+			if(typeof $scope.binding === 'undefined')
+	  			$scope.binding = {};
+			$scope.binding.lat = 1;
+			$scope.binding.lon = 2;
+
+			var map = L.map('map', {
+				center: [30, 15],
+				zoom: 1,
+				scrollWheelZoom: false,
+			});
+			L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+			map.on('click', function(e) {
+				$scope.binding.lat = e.latlng.lat;
+				$scope.binding.lon = e.latlng.lng;
+				$scope.$apply(); //necessary, because we aren't in an angular event
+			});
+		},
+    };
+  })
 ;
