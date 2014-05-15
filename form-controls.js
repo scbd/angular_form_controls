@@ -2340,6 +2340,9 @@ angular.module('formControls',[])
   			  rows: "@",
   			  hideUnfocused: "@",
 			  deletableTabs: "@",
+  			  helpKey: "@",
+  			  keyKey: "@",
+  			  titleKey: "@",
 			},
   			templateUrl: '/afc_template/tabbed-textareas.html',
   			controller: function($scope, $element, $attrs, $transclude) {
