@@ -2408,10 +2408,17 @@ angular.module('formControls',[])
 				scrollWheelZoom: false,
 			});
 			L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+			var marker;
 			map.on('click', function(e) {
 				$scope.binding.lat = e.latlng.lat;
 				$scope.binding.lon = e.latlng.lng;
 				$scope.$apply(); //necessary, because we aren't in an angular event
+
+				if(marker)
+					map.removeLayer(marker);
+				marker = new L.Marker(e.latlng);
+				map.addLayer(marker);
 			});
 		},
     };
