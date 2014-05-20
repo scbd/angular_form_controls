@@ -2410,15 +2410,18 @@ angular.module('formControls',[])
 			L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 			var marker;
+			$scope.newMarker = function() {
+				if(marker)
+					map.removeLayer(marker);
+				marker = new L.Marker({lat: $scope.binding.lat, lng: $scope.binding.lon});
+				map.addLayer(marker);
+			};
 			map.on('click', function(e) {
 				$scope.binding.lat = e.latlng.lat;
 				$scope.binding.lon = e.latlng.lng;
 				$scope.$apply(); //necessary, because we aren't in an angular event
 
-				if(marker)
-					map.removeLayer(marker);
-				marker = new L.Marker(e.latlng);
-				map.addLayer(marker);
+				$scope.newMarker();
 			});
 		},
     };
