@@ -1,4 +1,4 @@
-angular.module('formControls',[])
+angular.module('formControls',['ngLocalizer'])
 
 	
 	//============================================================
@@ -2327,6 +2327,11 @@ angular.module('formControls',[])
         help: '@',
       },
       templateUrl: '/afc_template/options.html',
+		controller: function($scope, $element, $attrs, $transclude, Localizer) {
+			for(var key in $scope.options)
+	  			$scope.options[key] = Localizer.phrase($scope.options[key]); 
+	  			
+		},
     };
   })
 	//TODO: switch binding to ngModel... because it's dumb to use another name

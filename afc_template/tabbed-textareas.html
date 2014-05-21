@@ -12,13 +12,13 @@
 </style>
 <ul class="nav nav-tabs">
 	<li ng-repeat="tab in tabs" class="{{$index}}th-tab atab {{$index==0?'active':''}}">
-	<a tabindex="0" class="{{$index}}th-button tab-button {{isValid(tab.key)?'has-success':''}}" ng-click="toggleTab($event, $index, tab[keyKey])" ng-focus="showTab($event, $index, tab[keyKey])">{{tab[titleKey]}}<button type="button" ng-show="deletableTabs" ng-click="tabs.splice(1, $index);">X</button></a>
+	<a tabindex="0" class="{{$index}}th-button tab-button {{isValid(tab.key)?'has-success':''}}" ng-click="toggleTab($event, $index, tab[keyKey])" ng-focus="showTab($event, $index, tab[keyKey])">{{tab[titleKey] | localize}}<button type="button" ng-show="deletableTabs" ng-click="tabs.splice(1, $index);">X</button></a>
 	</li>
 </ul>
 <div class="tabbed-textareas-inputs">
 	<span ng-repeat="tab in tabs">
 		<span class="tab{{tab[keyKey]}} tabbed-textarea">
-			<p>{{tab[helpKey]}}</p>
+			<p>{{tab[helpKey] | localize}}</p>
 			<textarea class="form-control textarea{{tab[keyKey]}}" rows="{{rows || 4}}" ng-model="binding[tab[keyKey]]" ng-keydown="overwriteKeys($event, $index)" ng-blur="maybeHide($event, $index)"></textarea>
 		</span>
 	</span>

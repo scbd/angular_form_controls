@@ -1,8 +1,18 @@
 'use strict';
 
-var app = angular.module('AngularFormControls', ['formControls', 'ngTagsInput',]);
+var app = angular.module('AngularFormControls', ['formControls', 'ngTagsInput', 'ngCookies', 'ngLocalizer']);
 
-app.controller('DemoController', ['$scope', '$q', function($scope, $q) {
+app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', function($scope, $q, $cookies, Localizer) {
+	$cookies.language = 'fr';
+	Localizer.setDictionary({
+		'the title': {
+			'fr': 'le titre',
+		},
+		'val1': {
+			'fr': 'une val',
+		},
+	});
+
 	$scope.demoTitle = 'This is a demo of every angular directive in this library';
 
 	var options = ['green', 'blue', 'red', 'rouge', 'rectangle', 'roulette', 'roulend', 'white', 'yellow'];
