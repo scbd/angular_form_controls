@@ -2291,15 +2291,19 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
     return {
       restrict: 'EAC',
       scope: {
-		  binding: "=ngModel",
-  		  type: '@?',
+		  ngModel: '=',
+  		  type: '@',
         title: '@',
-        placeholder: '@',
         help: '@',
+        placeholder: '@',
       },
       templateUrl: '/afc_template/string.html',
-  		controller: function($scope) {
-			$scope.type = $scope.type || 'text';
+  		controller: function($scope, $element, $attrs) {
+			$('input', $element).each(function() {
+				for(var i in $attrs)
+					if(i.substr(0,1) != '$' && !$scope[i] && i != 'ngModel')
+						$(this).attr(i, $attrs[i]);
+			});
 		},
     };
   })
@@ -2314,6 +2318,13 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
         help: '@',
       },
       templateUrl: '/afc_template/text.html',
+  		controller: function($scope, $element, $attrs) {
+			$('textarea', $element).each(function() {
+				for(var i in $attrs)
+					if(i.substr(0,1) != '$' && !$scope[i] && i != 'ngModel')
+						$(this).attr(i, $attrs[i]);
+			});
+		},
     };
   })
   .directive('afcOptions', function() {
@@ -2331,6 +2342,11 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 			for(var key in $scope.options)
 	  			$scope.options[key] = Localizer.phrase($scope.options[key]); 
 	  			
+			$('select', $element).each(function() {
+				for(var i in $attrs)
+					if(i.substr(0,1) != '$' && !$scope[i] && i != 'ngModel')
+						$(this).attr(i, $attrs[i]);
+			});
 		},
     };
   })
@@ -2428,6 +2444,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 
 				$scope.newMarker();
 			});
+
+			$('input', $element).each(function() {
+				for(var i in $attrs)
+					if(i.substr(0,1) != '$' && !$scope[i] && i != 'ngModel' && i != 'id')
+						$(this).attr(i, $attrs[i]);
+			});
 		},
     };
   })
@@ -2446,7 +2468,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
   		  minchars: '@?',
       },
       templateUrl: '/afc_template/autocomplete.html',
-		controller: function($scope, $element, $compile, $timeout) {
+		controller: function($scope, $element, $attrs, $compile, $timeout) {
 			//TODO: this is my, figure out how this works better, then improve it
 			if(typeof $scope.maxmatches == 'undefined') $scope.maxmatches = 5; 
 			else if($scope.maxmatches <= 0)	$scope.maxmatches = 999999;
@@ -2527,6 +2549,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 					$element.find('.list-group-item-info').removeClass('list-group-item-info');
 					$element.find('.acOption'+$scope.selected).addClass('list-group-item-info');
 				}, 100);
+			});
+
+			$('input', $element).each(function() {
+				for(var i in $attrs)
+					if(i.substr(0,1) != '$' && !$scope[i] && i != 'ngModel')
+						$(this).attr(i, $attrs[i]);
 			});
 		},
   	 };
