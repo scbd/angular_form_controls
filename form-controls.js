@@ -1,4 +1,4 @@
-angular.module('formControls',['ngLocalizer'])
+angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 
 	
 	//============================================================
@@ -2431,4 +2431,129 @@ angular.module('formControls',['ngLocalizer'])
 		},
     };
   })
+  .directive('afcAutocomplete', function() {
+    return {
+      restrict: 'AEC',
+      scope: {
+		  binding: '=ngModel',
+  		  options: '=',
+  		  source: '&',
+  		  preview: '=?',
+		  title: '@',
+  		  placeholder: '@',
+        help: '@?',
+  		  maxmatches: '@?',
+  		  minchars: '@?',
+      },
+      templateUrl: '/afc_template/autocomplete.html',
+		controller: function($scope, $element, $compile, $timeout) {
+			//TODO: this is my, figure out how this works better, then improve it
+			if(typeof $scope.maxmatches == 'undefined') $scope.maxmatches = 5; 
+			else if($scope.maxmatches <= 0)	$scope.maxmatches = 999999;
+			if(typeof $scope.minchars == 'undefined') $scope.minchars = 1; 
+			var maxmatches = $scope.maxmatches;
+			var minchars = $scope.minchars;
+
+			$scope.binding = "";
+			$scope.current = {};
+			$scope.selected = -1;
+			$scope.updateSelected = function(index) {
+				$scope.selected = index;
+			};
+			$scope.enterSelected = function() {
+				$scope.binding = $scope.current.value;
+			};
+			$scope.keydown = function($event) {
+				if($event.which == 38)
+					if($scope.selected > 0)
+						--$scope.selected;
+				if($event.which == 40)
+					if($scope.selected < ($scope.items.length - 1))
+						++$scope.selected;
+				if($event.which == 13)
+					$scope.enterSelected();
+				if($event.which == 9)
+					if($scope.items.length === 1)
+						$scope.enterSelected();
+			};
+			$scope.showOptions = function() {
+				if($scope.binding.length >= minchars && $scope.items.length <= maxmatches)
+					$element.find('.list-group').show();
+				else
+					$element.find('.list-group').hide();
+			};
+			$scope.hideOptions = function() {
+				//TODO: do this better... but it requires a bunch of work
+				//Honestly... the browser should trigger all events, before evaluating them, and an event should definitely be able to trigger while it has display: none... grrr....
+				$timeout(function() {
+					$element.find('.list-group').hide();
+					$element.find('input').focus();
+				}, 100);
+			};
+			var selectWatch = function(newValue) {
+				if($scope.selected != -1)
+					$scope.current = $scope.items[$scope.selected];
+			};
+			$scope.$watch('binding', function(newValue) {
+				$scope.source($scope.binding).then(function(result) {
+					$scope.items = result;
+					
+					//reselected the one we had selected if possible.
+					if($scope.selected != -1) {
+						var i;
+						for(i = 0; i != $scope.items.length; ++i)
+							if($scope.items[i] == $scope.current) {
+								$scope.selected = i; break;
+							}
+
+						if(i === $scope.items.length) {
+							$scope.selected = 0;
+							selectWatch($scope.items[$scope.selected]);
+						}
+					}
+					//else, if we have results and we didn't have anything selected, then select first item.
+					else if($scope.items.length !== 0) 
+						$scope.selected = 0;
+
+					$scope.showOptions();
+				});
+			});
+			$scope.$watch('selected', selectWatch);
+			$scope.$watch('current', function(newValue) {
+				$element.find('.list-group-item-info').removeClass('list-group-item-info');
+				$element.find('.acOption'+$scope.selected).addClass('list-group-item-info');
+				//this is incase the item hasn't been rendered yet...
+				$timeout(function() {
+					$element.find('.list-group-item-info').removeClass('list-group-item-info');
+					$element.find('.acOption'+$scope.selected).addClass('list-group-item-info');
+				}, 100);
+			});
+		},
+  	 };
+  })
+	.directive('compile', function($compile) {
+	  // directive factory creates a link function
+	  return {
+       restrict: 'A',
+		 controller: function($scope, $element, $attrs) {
+			 $scope.$watch(
+				function($scope) {
+				  // watch the 'compile' expression for changes
+				  return $scope.$eval($attrs.compile);
+				},
+				function(value) {
+				  // when the 'compile' expression changes
+				  // assign it into the current DOM
+				  $element.html(value);
+
+				  // compile the new DOM and link it to the current
+				  // $scope.
+				  // NOTE: we only compile .childNodes so that
+				  // we don't get into infinite loop compiling ourselves
+				  $compile($element.contents())($scope);
+				}
+			 );
+		  },
+	  };
+	});
 ;

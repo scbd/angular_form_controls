@@ -9,6 +9,7 @@
 		<script src="../bower_components/ng-tags-input/ng-tags-input.js"></script>
 		<script src="../bower_components/leaflet-0.7.2/leaflet.js"></script>
 		<script src="../bower_components/angular-cookies/angular-cookies.js"></script>
+		<script src="../bower_components/angular-sanitize/angular-sanitize.js"></script>
 		<script src="../bower_components/ngLocalizer/localizer.js"></script>
 		<script src="demo.js"></script>
 		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
@@ -21,7 +22,10 @@
 				<h1>{{demoTitle}}</h1>
 				<h3>Requirements: Angular, underscore</h3>
 
-					<h4>lonlat-input</h4>
+				<h4>autocomplete</h4>
+				<afc-autocomplete title="Autocomplete" placeholder="Type a Language" source="autocompleteQuery(demoObject.openArray[8])" preview="previewhtml" ng-model="demoObject.openArray[8]"></afc-autocomplete>
+
+				<h4>lonlat-input</h4>
 				<lonlat-input ng-model="demoObject.openArray[7]" help="what are these lon lats even for? Help text."></lonlat-input>
 
 				<h4>ng-tags-input</h4>

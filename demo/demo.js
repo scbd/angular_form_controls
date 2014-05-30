@@ -28,6 +28,57 @@ app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', funct
 	};
 	$scope.tagOptions = tagOptions;
 
+	var languages = [
+		{
+			value: 'c++',
+			attrs: {
+				color: 'red',
+			},
+		},
+		{
+			value: 'c#',
+			attrs: {
+				color: 'blue',
+			},
+		},
+		{
+			value: 'python',
+			attrs: {
+				color: 'green',
+			},
+		},
+		{
+			value: 'pygore',
+			attrs: {
+				color: 'green',
+			},
+		},
+		{
+			value: 'pitolli',
+			attrs: {
+				color: 'pink',
+			},
+		},
+		{
+			value: 'pytackle',
+			attrs: {
+				color: 'purple',
+			},
+		},
+	];
+	$scope.autocompleteQuery = function($query) {
+		var deferred = $q.defer();
+
+		var matchedOptions = [];
+		for(var i=0; i != languages.length; ++i)
+			if(languages[i].value.indexOf($query) !== -1)
+				matchedOptions.push(languages[i]);
+
+		deferred.resolve(matchedOptions);
+		return deferred.promise;
+	};
+
+	$scope.previewhtml = '<h3 style="color: {{current.attrs.color}}">{{current.value}}</h3>';
 
 	//Our test object to bind to
 	$scope.demoObject = {

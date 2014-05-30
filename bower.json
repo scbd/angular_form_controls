@@ -13,7 +13,8 @@
   "dependencies": {
     "ng-tags-input": "latest",
     "leaflet-0.7.2": "http://leaflet-cdn.s3.amazonaws.com/build/leaflet-0.7.2.zip",
-	 "ngLocalizer": "latest"
+	 "ngLocalizer": "latest",
+	 "angular-sanitize": "latest"
   },
   "license": "MIT",
   "private": true,
