@@ -1,4 +1,5 @@
-angular.module('formControls',['ngLocalizer', 'ngSanitize'])
+angular.module('formControls',['ngLocalizer', 'ngSanitize',])
+	.value('realm', 'ABS') //needed for some controls
 
 	
 	//============================================================
@@ -321,7 +322,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 				$scope.terms = [];
 				$scope.$watch('binding', $scope.load);
 			},
-			controller: ["$scope", "$q", "underscore", function ($scope, $q, _) 
+			controller: ["$scope", "$q", function ($scope, $q) 
 			{
 				//==============================
 				//
@@ -336,6 +337,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 					else if($scope.binding && angular.isString($scope.binding)) oBinding = [$scope.binding];
 
 					$scope.termsX = oBinding;
+					console.log('oBinding: ', $scope.terms);
 					return;
 
 
@@ -406,7 +408,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 					$element.addClass("list-unstyled");
 
 			},
-			controller: ["$scope", "$q", "Thesaurus", "Enumerable", '$timeout', function ($scope, $q, thesaurus, Enumerable, $timeout) 
+			controller: ["$scope", "$q", "Thesaurus", '$timeout', function ($scope, $q, thesaurus, $timeout) 
 			{
 				//==============================
 				//
@@ -545,7 +547,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 			require : "?ngModel",
 			scope: {
 				binding     : '=ngModel',
-				bindingName : '@ngModel',
+				//bindingName : '@ngModel',
 				bindingType : '@',
 				termsFn     : '&terms',
 				description : "=",
@@ -572,7 +574,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 				if(!$attr["class"])
 					$element.addClass("list-unstyled");
 			},
-			controller: ["$scope", "$q", "Thesaurus", "Enumerable", function ($scope, $q, thesaurus, Enumerable) 
+			controller: ["$scope", "$q", "Thesaurus", function ($scope, $q, thesaurus) 
 			{
 				//==============================
 				//
@@ -777,7 +779,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 
 				}
 			},
-			controller: ["$scope", "IStorage", "underscore", function ($scope, storage, _) 
+			controller: ["$scope", "IStorage", function ($scope, storage) 
 			{
 				$scope.editor = {};
 
@@ -1130,7 +1132,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 					if(_new!=_old && !_new) $element.find("#editReference").modal("hide");
 				});
 			},
-			controller: ["$scope", "authHttp", "underscore", function ($scope, $http, _) 
+			controller: ["$scope", "authHttp", function ($scope, $http) 
 			{
 				$scope.editor = {};
 
@@ -1408,7 +1410,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 					$scope.clearSelection();
 				})
 			},
-			controller: ["$scope", "$q","$filter", "$timeout", "underscore", function ($scope, $q, $filter, $timeout, _) 
+			controller: ["$scope", "$q","$filter", "$timeout", function ($scope, $q, $filter, $timeout) 
 			{
 				//==============================
 				//
@@ -2204,7 +2206,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 			scope: {
 				binding : '=ngModel',
 			},
-			controller: ["$scope", "IStorage", "editFormUtility", function ($scope, storage, editFormUtility) {
+			controller: ["$scope", "IStorage", function ($scope, storage) {
 
 				$scope.locales = [
 					{identifier:"ar", name:"Arabic"  }, 
@@ -2379,7 +2381,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 				}
 
 			},
-			controller: ["$scope", "underscore", function ($scope, _) 
+			controller: ["$scope", function ($scope) 
 			{
 				$scope.hasWarning = function() {  //default behavior
 
@@ -2699,5 +2701,682 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 			 );
 		  },
 	  };
-	});
+	})
+
+	//============================================================
+	//
+	// 
+	//
+	//============================================================
+	.filter("term", ["$http", function($http) {
+		var cacheMap = {};
+
+		return function(term, locale) {
+
+			if(!term)
+				return "";
+
+			if(term && angular.isString(term))
+				term = { identifier : term };
+
+			locale = locale||"en";
+
+			if(term.customValue)
+				return lstring(term.customValue, locale);
+
+			if(cacheMap[term.identifier])
+				return lstring(cacheMap[term.identifier].title, locale) ;
+
+			cacheMap[term.identifier] = $http.get("/api/v2013/thesaurus/terms/"+encodeURIComponent(term.identifier),  {cache:true}).then(function(result) {
+
+				cacheMap[term.identifier] = result.data;
+
+				return lstring(cacheMap[term.identifier].title, locale);
+
+			}).catch(function(){
+
+				cacheMap[term.identifier] = term.identifier;
+
+				return term.identifier;
+
+			});
+		};
+	}])
+
+  .factory('Thesaurus', [function() {
+		return {
+			buildTree : function(terms) {
+				var oTerms    = [];
+				var oTermsMap = {};
+
+				Enumerable.from(terms).forEach(function(value) {
+					var oTerm = {
+						identifier  : value.identifier,
+						title       : value.title,
+						description : value.description
+					}
+
+					oTerms.push(oTerm);
+					oTermsMap[oTerm.identifier] = oTerm;
+				});
+
+				for (var i = 0; i < oTerms.length; ++i) {
+					var oRefTerm = terms [i];
+					var oBroader = oTerms[i];
+
+					if (oRefTerm.narrowerTerms && oRefTerm.narrowerTerms.length > 0) {
+						angular.forEach(oRefTerm.narrowerTerms, function(identifier) {
+							var oNarrower = oTermsMap[identifier];
+
+							if (oNarrower) {
+								oBroader.narrowerTerms = oBroader.narrowerTerms || [];
+								oNarrower.broaderTerms = oNarrower.broaderTerms || [];
+
+								oBroader.narrowerTerms.push(oNarrower);
+								oNarrower.broaderTerms.push(oBroader);
+							}
+						});
+					}
+				}
+
+				return Enumerable.from(oTerms).where("o=>!o.broaderTerms").toArray();
+			}
+		}
+	}])
+	.filter("lstring", function() {
+    return function(ltext, locale) {
+      if(!ltext)
+        return "";
+
+      if(angular.isString(ltext))
+        return ltext;
+
+      var sText;
+
+      if(!sText && locale)
+        sText = ltext[locale];
+
+      if(!sText)
+        sText = ltext.en;
+
+      if(!sText) {
+        for(var key in ltext) {
+          sText = ltext[key];
+          if(sText)
+            break;
+        }
+      }
+
+      return sText||"";
+    }
+	})
+
+  .filter("truncate", function() {
+		return function(text, maxSize, suffix) {
+
+			if (!maxSize)
+				return text;
+
+			if (!suffix)
+				suffix = "";
+
+			if(!text)
+				return "".su;
+
+			if (text.length > maxSize)
+				text = text.substr(0, maxSize) + suffix;
+
+			return text;
+		};
+	})
+  .factory("IStorage", ["authHttp", "$q", "authentication", "realm", function($http, $q, authentication, defaultRealm) {
+		return new function()
+		{
+			var serviceUrls = { // Add Https if not .local
+				documentQueryUrl   : function() { return "/api/v2013/documents/"; },
+				documentUrl        : function() { return "/api/v2013/documents/:identifier"; },
+				validateUrl        : function() { return "/api/v2013/documents/x/validate"; },
+				draftUrl           : function() { return "/api/v2013/documents/:identifier/versions/draft"; },
+				attachmentUrl      : function() { return "/api/v2013/documents/:identifier/attachments/:filename"; },
+				securityUrl        : function() { return "/api/v2013/documents/:identifier/securities/:operation"; },
+				draftSecurityUrl   : function() { return "/api/v2013/documents/:identifier/versions/draft/securities/:operation"; },
+				draftLockUrl       : function() { return "/api/v2013/documents/:identifier/versions/draft/locks/:lockID"; }
+			};
+
+			//==================================================
+			//
+			// Documents
+			//
+			//==================================================
+			this.documents = {
+
+				//===========================
+				//
+				//===========================
+				"query" : function(query, collection, params)
+				{
+					console.log('query');
+					console.log(params);
+					params            = _.extend({}, params||{});
+					params.collection = collection;
+					params.$filter    = query;
+
+					if (query && !collection)
+						params.collection = "my";
+
+					var useCache = !!params.cache;
+					if(!params.cache)
+						params.cache = true;
+
+					var oTrans = transformPath(serviceUrls.documentQueryUrl(), params);
+
+					return $http.get(oTrans.url, {  params : oTrans.params, cache:useCache });
+
+					//TODO: return result.data;
+				},
+
+				//===========================
+				//
+				//===========================
+				"get" : function(identifier, params)
+				{
+					params            = clone(params||{});
+					params.identifier = identifier;
+
+					var useCache = !!params.cache;
+
+					if(!params.cache)
+						params.cache = true;
+
+
+					var oTrans = transformPath(serviceUrls.documentUrl(), params);
+
+					return $http.get(oTrans.url, { params : oTrans.params, cache:useCache });
+
+					//TODO: return result.data;
+
+				},
+
+				//===========================
+				//
+				//===========================
+				"exists" : function(identifier, params)
+				{
+					params            = clone(params||{});
+					params.identifier = identifier;
+
+					var useCache = !!params.cache;
+
+					if(!params.cache)
+						params.cache = true;
+
+
+					var oTrans = transformPath(serviceUrls.documentUrl(), params);
+
+					return $http.head(oTrans.url, { params : oTrans.params, cache:useCache }).then(function() {
+						
+						return true;
+						
+					}).catch(function(error) {
+						
+						if(error.status!="404")
+							throw "Error";
+
+						return false;
+					});
+				},
+
+				//===========================
+				//
+				//===========================
+				"put" : function(identifier, data, params)
+				{
+					params            = clone(params||{});
+					params.identifier = identifier;
+
+					if (!params.schema && data && data.header && data.header.schema)
+						params.schema = data.header.schema;
+
+					var oTrans = transformPath(serviceUrls.documentUrl(), params);
+
+					return $http.put(oTrans.url, data, { "params" : oTrans.params }).then(function(result){
+						return result.data;
+					});
+				},
+
+				//===========================
+				//
+				//===========================
+				"delete" : function(identifier, params)
+				{
+					params            = clone(params||{});
+					params.identifier = identifier;
+
+					var oTrans = transformPath(serviceUrls.documentUrl(), params);
+
+					return $http.delete(oTrans.url, { "params" : oTrans.params });
+				},
+
+				//===========================
+				//
+				//===========================
+				"validate" : function(document, params)
+				{
+					params = clone(params || {});
+
+					if (!params.schema && document && document.header && document.header.schema)
+						params.schema = document.header.schema;
+
+					var oTrans = transformPath(serviceUrls.validateUrl(), params);
+
+					return $http.put(oTrans.url, document, { "params" : oTrans.params });
+
+					//TODO: return result.data;
+				},
+
+				//===========================
+				//
+				//===========================
+				"security": {
+					canCreate: function(identifier, schema, metadata) {
+						return canDo(serviceUrls.securityUrl(), "create", identifier, schema, metadata);
+					},
+
+					canUpdate: function(identifier, schema, metadata) {
+						return canDo(serviceUrls.securityUrl(), "update", identifier, schema, metadata);
+					},
+
+					canDelete: function(identifier, schema, metadata) {
+						return canDo(serviceUrls.securityUrl(), "delete", identifier, schema, metadata);
+					}
+				}
+			};
+
+			//==================================================
+			//
+			// Drafts
+			//
+			//==================================================
+			this.drafts = {
+
+				//===========================
+				//
+				//===========================
+				"query" : function(query, params)
+				{
+					params            = clone(params||{});
+					params.collection = "mydraft";
+					params.$filter    = query;
+
+					var useCache = !!params.cache;
+					
+					if(!params.cache)
+						params.cache = true;
+
+					var oTrans = transformPath(serviceUrls.documentQueryUrl(), params);
+
+					return $http.get(oTrans.url, {  params : oTrans.params, cache:useCache });
+
+					//TODO: return result.data;
+				},
+
+
+				//===========================
+				//
+				//===========================
+				"get" : function(identifier, params)
+				{
+					params            = clone(params||{});
+					params.identifier = identifier;
+
+					var useCache = !!params.cache;
+
+					if(!params.cache)
+						params.cache = true;
+
+					var oTrans = transformPath(serviceUrls.draftUrl(), params);
+
+					return $http.get(oTrans.url, {  params : oTrans.params, cache:useCache });
+
+					//TODO: return result.data;
+				},
+
+				//===========================
+				//
+				//===========================
+				"exists" : function(identifier, params)
+				{
+					params            = clone(params||{});
+					params.identifier = identifier;
+
+					var useCache = !!params.cache;
+
+					if(!params.cache)
+						params.cache = true;
+
+					var oTrans = transformPath(serviceUrls.draftUrl(), params);
+
+					return $http.head(oTrans.url, {  params : oTrans.params, cache:useCache }).then(function() {
+						
+						return true;
+						
+					}).catch(function(error) {
+						
+						if(error.status!="404")
+							throw "Error";
+
+						return false;
+					});
+				},
+
+				//===========================
+				//
+				//===========================
+				"put" : function(identifier, data, params)
+				{
+					params            = clone(params||{});
+					params.identifier = identifier;
+
+					if (!params.schema && data && data.header && data.header.schema)
+						params.schema = data.header.schema;
+
+					var oTrans = transformPath(serviceUrls.draftUrl(), params);
+
+					return $http.put(oTrans.url, data, { "params" : oTrans.params }).then(function(result){
+						return result.data;
+					});
+				},
+
+				//===========================
+				//
+				//===========================
+				"delete" : function(identifier, params)
+				{
+					params            = clone(params||{});
+					params.identifier = identifier;
+
+					var oTrans = transformPath(serviceUrls.draftUrl(), params);
+
+					return $http.delete(oTrans.url, { "params" : oTrans.params });
+
+					//TODO: return result.data;
+				},
+
+				//===========================
+				//
+				//===========================
+				"security": {
+					canCreate: function(identifier, schema, metadata) {
+						return canDo(serviceUrls.draftSecurityUrl(), "create", identifier, schema, metadata);
+					},
+
+					canUpdate: function(identifier, schema, metadata) {
+						return canDo(serviceUrls.draftSecurityUrl(), "update", identifier, schema, metadata);
+					},
+
+					canDelete: function(identifier, schema, metadata) {
+						return canDo(serviceUrls.draftSecurityUrl(), "delete", identifier, schema, metadata);
+					}
+				},
+
+				"locks" : {
+
+					//===========================
+					//
+					// Not tested
+					//
+					//===========================
+					"delete" : function(identifier, lockID)
+					{
+						var params = {
+							identifier : identifier,
+							lockID     : lockID
+						};
+
+						var oTrans = transformPath(serviceUrls.draftLockUrl(), params);
+
+						return $http.delete(oTrans.url).then(function(success) {
+							return success.data;
+						});
+					}
+				}
+			};
+
+			this.attachments = {
+
+				//===========================
+				//
+				// Not tested
+				//
+				//===========================
+				"put" : function(identifier, file, params)
+				{
+					params            = params || {};
+					params.identifier = identifier;
+					params.filename   = file.name;
+
+					var contentType = params.contentType || getMimeTypes(file.name, file.type || "application/octet-stream");
+
+					params.contentType = undefined;
+
+					var oTrans = transformPath(serviceUrls.attachmentUrl(), params);
+
+					return $http.put(oTrans.url, file, {
+						"headers" : { "Content-Type": contentType },
+						"params"  : oTrans.params
+					}).then(
+					function(success) {
+						return angular.extend(success.data || {}, { "url": oTrans.url });
+					},
+					function(error) {
+						error.data = angular.extend(error.data || {}, { "url": oTrans.url });
+						throw error;
+					});
+				},
+
+				"getMimeType": function(file)
+				{
+					return getMimeTypes(file.name, file.type || "application/octet-stream");
+				}
+			};
+
+			//==================================================
+			//
+			//
+			//==================================================
+			var getMimeTypes = function(filename, defaultMimeType) {
+				var sMimeType = defaultMimeType || "application/octet-stream";
+
+				if (filename && sMimeType == "application/octet-stream")
+				{
+					var sExt   = "";
+					var iIndex = filename.lastIndexOf(".");
+
+					if (iIndex >= 0)
+						sExt = filename.substring(iIndex).toLowerCase();
+
+					if (sExt == ".json")    sMimeType = "application/json";
+					if (sExt == ".geojson") sMimeType = "application/json";
+					if (sExt == ".xml")     sMimeType = "application/xml";
+				}
+
+				return sMimeType;
+			};
+
+			//==================================================
+			//
+			//
+			//==================================================
+			var clone = function(obj) {
+
+				if (obj === null)
+					return null;
+
+				if (obj === undefined)
+					return undefined;
+
+				return angular.fromJson(angular.toJson(obj));
+			};
+
+			//===========================
+			//
+			// Replace :xyz in path with value in params
+			// query part will be done by $http
+			//
+			//===========================
+			var transformPath = function(url, params)
+			{
+				var oRegex     = /\:\w+/g;
+				var oMatch     = null;
+				var qMatches   = [];
+				var oNewParams = {};
+
+				while ((oMatch = oRegex.exec(url)) !== null) {
+					oMatch.key   = oMatch[0].substring(1);
+					oMatch.value = oMatch[0];
+					qMatches.splice(0, 0, oMatch);
+				}
+
+				for(var key in params||{}) {
+					var bExist = false;
+
+					for(var i in qMatches) {
+						if (qMatches[i].key != key)
+							continue;
+
+						bExist = true;
+						qMatches[i].value = params[key].toString();
+					}
+
+					if(!bExist)
+						oNewParams[key] = params[key];
+				}
+
+				for (var j in qMatches) {
+					url = replaceAt(url, qMatches[j].index, qMatches[j][0].length, encodeURIComponent(qMatches[j].value));
+				}
+
+				return { "url" : url, "params" : oNewParams };
+			};
+
+			//===========================
+			//
+			// Calls storage security
+			//
+			//===========================
+			var canDo = function(patternPath, operation, identifier, schema, metadata) {
+
+				metadata = angular.extend({}, { "schema": schema }, metadata || {});
+
+				return $q.when(authentication.getUser()).then(function(user) {
+
+					if (!metadata.government && user.government)
+						metadata = angular.extend(metadata, { "government": user.government });
+
+					if (!metadata.realm && defaultRealm)
+						metadata = angular.extend(metadata, { "realm": defaultRealm });
+
+					var params = {
+						"identifier" : identifier || "x",
+						"operation"  : operation,
+						"metadata"   : metadata
+					};
+
+					var oTrans = transformPath(patternPath, params);
+
+					return $http.get(oTrans.url, { "params": oTrans.params })
+
+				}).then(function(res) {
+
+					return res.data.isAllowed;
+				});
+			};
+
+			//===========================
+			//
+			// Replace :xyz in path with value in params
+			// query part will be done by $http
+			//
+			//===========================
+			var replaceAt = function(str, index, len, newText) {
+				return str.substring(0, index) + newText + str.substring(index+len);
+			};
+
+			return this;
+		}();
+	}])
+
+  .factory('authentication', ["$http", "$browser", function($http, $browser) { 
+
+		var currentUser = null;
+
+		//============================================================
+	    //
+	    //
+	    //============================================================
+		function getUser () {
+
+			if(currentUser) return currentUser;
+
+			var headers = { Authorization: "Ticket " + $browser.cookies().authenticationToken };
+
+			currentUser = $http.get('/api/v2013/authentication/user', { headers: headers}).then(function onsuccess (response) {
+				return response.data;
+			}, function onerror (error) {
+				return { userID: 1, name: 'anonymous', email: 'anonymous@domain', government: null, userGroups: null, isAuthenticated: false, isOffline: true, roles: [] };
+			});
+
+			return currentUser;
+		}
+
+		//============================================================
+	    //
+	    //
+	    //============================================================
+		function signOut () {
+
+			document.cookie = "authenticationToken=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+			reset();
+		}
+
+		//============================================================
+	    //
+	    //
+	    //============================================================
+		function reset () {
+
+			currentUser = undefined;
+		}
+
+		return { getUser: getUser, signOut: signOut, reset: reset };
+
+	}])
+
+	.factory('authHttp', ["$http", "$browser", function($http, $browser) {
+
+		function addAuthentication(config) {
+		
+			if(!config)         config         = {};
+			if(!config.headers) config.headers = {};
+
+			if($browser.cookies().authenticationToken) config.headers.Authorization = "Ticket "+$browser.cookies().authenticationToken;
+			else                                       config.headers.Authorization = undefined;
+
+			return config;
+		}
+
+		function authHttp(config) {
+			return $http(addAuthentication(config));
+		}
+
+		authHttp["get"   ] = function(url,       config) { return authHttp(angular.extend(config||{}, { 'method' : "GET"   , 'url' : url })); };
+		authHttp["head"  ] = function(url,       config) { return authHttp(angular.extend(config||{}, { 'method' : "HEAD"  , 'url' : url })); };
+		authHttp["delete"] = function(url,       config) { return authHttp(angular.extend(config||{}, { 'method' : "DELETE", 'url' : url })); };
+		authHttp["jsonp" ] = function(url,       config) { return authHttp(angular.extend(config||{}, { 'method' : "JSONP" , 'url' : url })); };
+		authHttp["post"  ] = function(url, data, config) { return authHttp(angular.extend(config||{}, { 'method' : "POST"  , 'url' : url, 'data' : data })); };
+		authHttp["put"   ] = function(url, data, config) { return authHttp(angular.extend(config||{}, { 'method' : "PUT"   , 'url' : url, 'data' : data })); };
+
+		return authHttp;
+	}])
+
 ;

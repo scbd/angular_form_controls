@@ -2,7 +2,7 @@
 
 var app = angular.module('AngularFormControls', ['formControls', 'ngTagsInput', 'ngCookies', 'ngLocalizer']);
 
-app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', function($scope, $q, $cookies, Localizer) {
+app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', '$http', 'IStorage', function($scope, $q, $cookies, Localizer, $http, storage) {
 	$cookies.language = 'fr';
 	Localizer.setDictionary({
 		'the title': {
@@ -94,11 +94,54 @@ app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', funct
 	};
 	$scope.demoObject.openArray[30] = '';
 
-	//TODO: learn how to do term properly...
-	$scope.demoObject.terms = [{
-		identifier: "myident",
-		customValue: "hello",
-	}];
+	$scope.terms = function() {
+		return $q.all([$http.get("/api/v2013/thesaurus/domains/50616B56-12F3-4C46-BC43-2DFC26679177/terms", {cache: true})]).then(function(result) {
+			var data = result[0].data.slice(0, 5);
+			//data.push(result[1].data);
+			return data;
+		});
+	};
+	$scope.termDescription = "a term description";
+	$scope.countries = function() {
+		return $http.get(
+			"/api/v2013/thesaurus/domains/countries/terms",
+			{ cache: true }).then(function(o){
+				return o.data;
+			});
+	};
+
+  $scope.loadRecords = function(identifier, schema) {
+    if (identifier) { //lookup single record
+      var deferred = $q.defer();
+
+      storage.documents.get(identifier, { info: "" })
+        .then(function(r) {
+          deferred.resolve(r.data);
+        }, function(e) {
+          if (e.status == 404) {
+            storage.drafts.get(identifier, { info: "" })
+              .then(function(r) { deferred.resolve(r.data)},
+                  function(e) { deferred.reject (e)});
+          }
+          else {
+            deferred.reject (e)
+          }
+        });
+      return deferred.promise;
+    }
+
+    //Load all record of specified schema;
+
+    var sQuery = "type eq '" + encodeURI(schema) + "'";
+
+    return $q.all([storage.documents.query(sQuery, null, { cache: true }), 
+             storage.drafts   .query(sQuery, null, { cache: true })])
+      .then(function(results) {
+        var qResult = Enumerable.from (results[0].data.Items)
+                    .union(results[1].data.Items, "$.identifier");
+        return qResult.toArray();
+      });
+  };
 
 	//TODO: move all inputs into here, like options, etc.
 	$scope.inputs = {
