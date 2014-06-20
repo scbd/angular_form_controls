@@ -1717,7 +1717,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/afc_templates/km-toggle.html',
+			templateUrl: '/afc_template/km-toggle.html',
 			replace: true,
 			transclude: false,
 			scope: {
