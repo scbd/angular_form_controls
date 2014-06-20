@@ -310,7 +310,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize'])
 	{
 		return {
 			restrict: 'EAC',
-			templateUrl: '/afc_templates/km-terms.html',
+			templateUrl: '/afc_template/km-terms.html',
 			replace: true,
 			scope: {
 				binding : '=ngModel',
