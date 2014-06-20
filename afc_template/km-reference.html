@@ -1,14 +1,14 @@
 <div>
 	<div class="reference-select">
-		<table class="table table-hover">
-			<tr ng-repeat="reference in references">
+		<table class="table table-hover table-striped">
+			<tr ng-repeat="reference in references" >
 				<td>
 					<div ng-show="!reference.__loading && !reference.__errorCode">
 						<div ng-transclude></div>
 					</div>
 
 					<div ng-show="reference.__loading">
-						Loading...
+						<i class="fa fa-spinner fa-spin"></i> Loading...
 					</div>
 
 					<div ng-show="reference.__errorCode">
@@ -26,7 +26,7 @@
 					</div>
 				</td>
 				<td style="text-align:end">
-					<button type="button" title="Remove" class="btn btn-default" ng-click="remove(reference)"><i class="icon-trash"></i></button>
+					<button type="button" title="Remove" class="btn btn-default" ng-click="remove(reference)"><i class="glyphicon glyphicon-trash"></i></button>
 				</td>
 			</tr>
 		</table>
