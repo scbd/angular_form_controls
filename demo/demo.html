@@ -62,7 +62,12 @@
 
 				<h4>kmReference</h4>
 				<h5>Reference document (without an identifier it won't function here)</h5>
-				<km-reference ng-model="demoObject.openArray[16]" loader="loadRecords(identifier, 'measure')"></km-reference>
+				<km-reference ng-model="demoObject.openArray[16]" loader="loadRecords(identifier, 'measure')">
+					<div>
+						<div><strong>{{reference.title | lstring}}</strong></div>
+						<div>{{reference.summary | lstring}}</div>
+					</div>
+				</km-reference>
 
 				<h4>kmFormLanguages</h4>
 				<km-form-languages ng-model="demoObject.openArray[17]"></km-form-languages>
