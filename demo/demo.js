@@ -139,7 +139,6 @@ app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', '$htt
     return $q.all([storage.documents.query(sQuery, null, { cache: true }), 
              storage.drafts.query(sQuery, null, { cache: true })])
       .then(function(results) {
-			console.log('results: ', results);
         var qResult = Enumerable.from (results[0].data.Items)
                     .union(results[1].data.Items, "$.identifier");
         return qResult.toArray();
