@@ -1,0 +1,13 @@
+		 <div class="input-group">
+			 <input {{required}} type="{{type}}" class="form-control" id="{{title}}" placeholder="{{placeholder | localize}}" ng-model="bindingDisplay" ng-keydown="keydown($event)" ng-keyup="keyup($event)" ng-focus="keydown($event)" ng-blur="hideOptions()" ng-click="toggleOptions()">
+			 <span class="input-group-btn">
+				 <button type="button" class="btn btn-default" ng-click="toggleOptions()" ng-blur="hideOptions()" tabindex="-1">
+					 <span class="glyphicon glyphicon-chevron-down"></span>
+				 </button>
+			 </span>
+		 </div>
+		 <input type="hidden" id="shadow_{{title}}" ng-model="binding">
+		 <div style="display: none; position: absolute; z-index: 9999; background-color: white; max-height: 300px; overflow: auto;" class="list-group">
+			 <a ng-repeat="item in items" ng-click="enterSelected()" ng-mouseover="updateSelected($index)" class="list-group-item acOption{{$index}} acOptions">{{item.value}}</a>
+		 </div>
+		 <div ng-show="!hidePreview" compile="preview"></div>

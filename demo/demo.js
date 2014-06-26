@@ -66,19 +66,9 @@ app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', '$htt
 			},
 		},
 	];
-	$scope.autocompleteQuery = function($query) {
-		var deferred = $q.defer();
+	
 
-		var matchedOptions = [];
-		for(var i=0; i != languages.length; ++i)
-			if(languages[i].value.indexOf($query) !== -1)
-				matchedOptions.push(languages[i]);
-
-		deferred.resolve(matchedOptions);
-		return deferred.promise;
-	};
-
-	$scope.previewhtml = '<h3 style="color: {{current.attrs.color}}">{{current.value}}</h3>';
+	$scope.previewhtml = '<img style="height: 50px;" src="http://www.geonames.org/flags/x/{{current.attrs.identifier}}.gif"></h3>';
 
 	//Our test object to bind to
 	$scope.demoObject = {
@@ -108,6 +98,28 @@ app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', '$htt
 			{ cache: true }).then(function(o){
 				return o.data;
 			});
+	};
+	$scope.countriesArray = [];
+	$scope.countries().then(function(data) {
+		$scope.countriesArray = data;
+	});
+
+	$scope.autocompleteQuery = function($query) {
+		var deferred = $q.defer();
+
+		var matchedOptions = [];
+		for(var i=0; i != $scope.countriesArray.length; ++i)
+			if($scope.countriesArray[i].name.toLowerCase().indexOf($query.toLowerCase()) !== -1)
+				matchedOptions.push({
+					value: $scope.countriesArray[i].name,
+					attrs: {
+						identifier: $scope.countriesArray[i].identifier,
+					},
+				});
+
+		console.log('options: ', matchedOptions);
+		deferred.resolve(matchedOptions);
+		return deferred.promise;
 	};
 
   $scope.loadRecords = function(identifier, schema) {
