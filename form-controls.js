@@ -2636,22 +2636,19 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 		},
     };
   })
-  .directive('afcAutocomplete', function() {
+	.directive('afcAutocomplete', function() {
     return {
       restrict: 'AEC',
       scope: {
 		  binding: '=ngModel',
-  		  options: '=',
-  		  source: '&',
+  		  source: '=',
   		  preview: '=?',
-		  title: '@',
   		  placeholder: '@',
-        help: '@?',
   		  maxmatches: '@?',
   		  minchars: '@?',
   		  selectbox: '@?',
       },
-      templateUrl: '/afc_template/autocomplete.html',
+      templateUrl: '/afc_template/afc-autocomplete.html',
 		controller: function($scope, $element, $attrs, $compile, $timeout) {
 			//TODO: showOptions should work if explicitly called.
 			//TODO: this is my, figure out how this works better, then improve it
@@ -2703,7 +2700,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			$scope.toggleOptions = function() {
 				$element.find('.list-group').toggle();
 				if($scope.items.length <= 0) //its possible the items werent ready the last time we applied the filter.
-					$scope.source()($scope.bindingDisplay).then(function(result) {
+					$scope.source($scope.bindingDisplay).then(function(result) {
 						$scope.items = result;
 					});
 			};
@@ -2732,7 +2729,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				if(!$scope.selectbox)
 					$scope.binding = $scope.bindingDisplay;
 
-				$scope.source()($scope.bindingDisplay).then(function(result) {
+				$scope.source($scope.bindingDisplay).then(function(result) {
 					$scope.items = result;
 					
 					//reselected the one we had selected if possible.
@@ -2773,8 +2770,26 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						$(this).attr(i, $attrs[i]);
 			});
 		},
+	 }
+	})
+	.directive('lwfcAutocomplete', function() {
+    return {
+      restrict: 'AEC',
+      scope: {
+		  binding: '=ngModel',
+  		  source: '=',
+  		  preview: '=?',
+		  title: '@',
+  		  placeholder: '@',
+        help: '@?',
+  		  maxmatches: '@?',
+  		  minchars: '@?',
+  		  selectbox: '@?',
+      },
+      templateUrl: '/afc_template/lwfc-autocomplete.html',
   	 };
   })
+
 	.directive('compile', function($compile) {
 	  // directive factory creates a link function
 	  return {
