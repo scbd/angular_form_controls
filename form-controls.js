@@ -1132,9 +1132,43 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					if(_new!=_old && !_new) $element.find("#editReference").modal("hide");
 				});
 			},
-			controller: ["$scope", "authHttp", function ($scope, $http) 
+			controller: ["$scope", "authHttp", '$element', '$timeout', function ($scope, $http, $element, $timeout) 
 			{
 				$scope.editor = {};
+				$scope.selected = -1;
+
+				$scope.keydown = function($event) {
+					if($event.which == 38) {
+						if($scope.selected > 0)
+							--$scope.selected;
+					}
+					else if($event.which == 40) {
+						if($scope.selected < ($scope.editor.references.length - 1))
+							++$scope.selected;
+					}
+					else if($event.which == 13) {
+						$scope.editor.references[$scope.selected].__checked = true;
+						$scope.editor.save();
+						$event.preventDefault();
+					}
+					console.log('selected:', $scope.selected);
+				};
+				$scope.$watch('selected', function(newValue) {
+					$element.find('.list-group-item-info').removeClass('list-group-item-info');
+					//TODO: set acOption as the row, so I can just reuse that class rather than having multiple [both acOptions and acCheckbox]
+					$element.find('.acOption'+$scope.selected).addClass('list-group-item-info');
+					$element.find('.acOptions'+$scope.selected + ' :checkbox').focus();
+					console.log($element.find('.acOption'+$scope.selected + ' :checkbox'));
+					//this is incase the item hasn't been rendered yet...
+					//we essentially just try again
+					$timeout(function() {
+						$element.find('.list-group-item-info').removeClass('list-group-item-info');
+						$element.find('.acOption'+$scope.selected).addClass('list-group-item-info');
+						$element.find('.acOption'+$scope.selected + ' :checkbox').focus();
+					}, 100);
+				});
+
+
 
 				//====================
 				//
@@ -1238,6 +1272,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						function(data) {
 							$scope.isLoading = false;
 							$scope.editor.references = $scope.clone(data);
+							$element.find('.km-reference-search').focus();
 						},
 						function(err) {
 							$scope.isLoading = false;
@@ -1311,6 +1346,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				{
 					$scope.editor.search  = null;
 					$scope.editor.visible = false;
+					$element.find('.km-reference-select').focus();
 				}
 
 				//====================
@@ -1822,8 +1858,10 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			link: function($scope, $element, $attr) {
 				$element.datepicker({
 					format: "yyyy-mm-dd",
-					 autoclose: true
-					});
+					autoclose: true
+				}).on('changeDate', function(event) {
+					$element.find('input').focus();
+				});
 			},
 			controller: ["$scope", function ($scope) 
 			{
