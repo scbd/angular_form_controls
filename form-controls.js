@@ -1339,7 +1339,6 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 	//
 	//
 	//============================================================
-	//might need htmlUtility? if it doesn't work, then try that.
 	.directive('kmSelect', function () 
 	{
 		return {
@@ -1410,8 +1409,33 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					$scope.clearSelection();
 				})
 			},
-			controller: ["$scope", "$q","$filter", "$timeout", function ($scope, $q, $filter, $timeout) 
+			controller: ["$scope", "$q","$filter", "$timeout", "$element", function ($scope, $q, $filter, $timeout, $element) 
 			{
+				$scope.giveFocus = function() {
+					$element.find('.dropdown-menu').show();
+					$element.find('input').focus();
+				};
+
+				$scope.selected = 0;
+
+				$scope.selectAndTab = function($event) {
+					console.log('filter: ', $scope.filterText);
+					var filtered = $filter('filter')($scope.allItems, $scope.filterText);
+					console.log(filtered);
+					$scope.allItems[$scope.selected].selected = false;
+					switch($event.keyCode) {
+						case 38:
+							if($scope.selected > 0)
+								--$scope.selected;
+								break;
+						case 40:
+							if($scope.selected < $scope.allItems.length)
+								++$scope.selected;
+								break;
+					}
+					$scope.allItems[$scope.selected].selected = true;
+				};
+
 				//==============================
 				//
 				//==============================
@@ -1446,6 +1470,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 					return oResult;
 				}
+
 				//==============================
 				//
 				//==============================
@@ -1474,7 +1499,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						$q.when($scope.itemsFn(),
 							function(data) { // on success
 								$scope.__loading = false;
-								$scope.rootItems = transform(data); //clone values
+								$scope.rootItems = data;//transform(data); //clone values
 								$scope.allItems  = flaten($scope.rootItems);
 
 								deferred.resolve();
@@ -1707,6 +1732,8 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					 $(document).on('click', '#filterText input', function (e) {
 						 e.stopPropagation();
 					});
+
+				$scope.autoInit();
 			}]
 		}
 	})
@@ -2584,17 +2611,22 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
         help: '@?',
   		  maxmatches: '@?',
   		  minchars: '@?',
+  		  selectbox: '@?',
       },
       templateUrl: '/afc_template/autocomplete.html',
 		controller: function($scope, $element, $attrs, $compile, $timeout) {
+			//TODO: showOptions should work if explicitly called.
 			//TODO: this is my, figure out how this works better, then improve it
-			if(typeof $scope.maxmatches == 'undefined') $scope.maxmatches = 5; 
+			if(typeof $scope.maxmatches == 'undefined') $scope.maxmatches = 7; 
 			else if($scope.maxmatches <= 0)	$scope.maxmatches = 999999;
 			if(typeof $scope.minchars == 'undefined') $scope.minchars = 1; 
+			if(typeof $scope.selectbox == 'undefined') $scope.selectbox = false;
 			var maxmatches = $scope.maxmatches;
 			var minchars = $scope.minchars;
 
-			$scope.binding = "";
+			$scope.hidePreview = false;// TODO: make this an option.
+			if(typeof $scope.binding == "undefined")
+				$scope.binding = "";
 			$scope.current = {};
 			$scope.selected = -1;
 			$scope.updateSelected = function(index) {
@@ -2604,38 +2636,65 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				$scope.binding = $scope.current.value;
 			};
 			$scope.keydown = function($event) {
-				if($event.which == 38)
+				//TODO: don't switch up and down if we aren't showing results yet.
+				if($event.which == 38) {
 					if($scope.selected > 0)
 						--$scope.selected;
-				if($event.which == 40)
+				}
+				else if($event.which == 40) {
 					if($scope.selected < ($scope.items.length - 1))
 						++$scope.selected;
-				if($event.which == 13)
+				}
+				else if($event.which == 13) {
 					$scope.enterSelected();
-				if($event.which == 9)
+					$event.preventDefault();
+					$scope.hideOptions();
+				}
+				else if($event.which == 9) {
 					if($scope.items.length === 1)
 						$scope.enterSelected();
+				}
 			};
-			$scope.showOptions = function() {
-				if($scope.binding.length >= minchars && $scope.items.length <= maxmatches)
-					$element.find('.list-group').show();
+			$scope.keyup = function($event) {
+				if($scope.bindingDisplay.length >= minchars && $scope.items.length <= maxmatches)
+					$scope.showOptions();
 				else
 					$element.find('.list-group').hide();
+			};
+			//TODO: is this function really necessary?
+			$scope.toggleOptions = function() {
+				$element.find('.list-group').toggle();
+				if($scope.items.length <= 0) //its possible the items werent ready the last time we applied the filter.
+					$scope.source()($scope.bindingDisplay).then(function(result) {
+						$scope.items = result;
+					});
+			};
+			$scope.showOptions = function() {
+				$element.find('.list-group').show();
 			};
 			$scope.hideOptions = function() {
 				//TODO: do this better... but it requires a bunch of work
 				//Honestly... the browser should trigger all events, before evaluating them, and an event should definitely be able to trigger while it has display: none... grrr....
 				$timeout(function() {
 					$element.find('.list-group').hide();
-					$element.find('input').focus();
+					$scope.bindingDisplay = $scope.binding;
 				}, 100);
 			};
 			var selectWatch = function(newValue) {
 				if($scope.selected != -1)
+				{
 					$scope.current = $scope.items[$scope.selected];
+					console.log('current: ', $scope.current);
+				}
 			};
 			$scope.$watch('binding', function(newValue) {
-				$scope.source($scope.binding).then(function(result) {
+				$scope.bindingDisplay = $scope.binding;
+			});
+			$scope.$watch('bindingDisplay', function(newValue) {
+				if(!$scope.selectbox)
+					$scope.binding = $scope.bindingDisplay;
+
+				$scope.source()($scope.bindingDisplay).then(function(result) {
 					$scope.items = result;
 					
 					//reselected the one we had selected if possible.
@@ -2655,8 +2714,9 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					else if($scope.items.length !== 0) 
 						$scope.selected = 0;
 
-					$scope.showOptions();
+					console.log('items:', $scope.items);
 				});
+
 			});
 			$scope.$watch('selected', selectWatch);
 			$scope.$watch('current', function(newValue) {

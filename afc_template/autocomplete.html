@@ -1,11 +1,19 @@
   <div class="form-group">
     <label for="{{title}}" class="col-sm-2 control-label">{{title | localize}}</label>
     <div class="col-sm-6">
-		 <input {{required}} type="{{type}}" class="form-control" id="{{title}}" placeholder="{{placeholder | localize}}" ng-model="binding" ng-keydown="keydown($event)" ng-focus="showOptions()" ng-blur="hideOptions()">
-			<div style="display: none; position: absolute; z-index: 100; background-color: white;" class="list-group">
-				<a ng-repeat="item in items" ng-click="enterSelected()" ng-mouseover="updateSelected($index)" class="list-group-item acOption{{$index}} acOptions">{{item.value}}</a>
-			</div>
-      <p ng-show="help" class="help-block">{{help | localize}}</p>
+		 <div class="input-group">
+			 <input {{required}} type="{{type}}" class="form-control" id="{{title}}" placeholder="{{placeholder | localize}}" ng-model="bindingDisplay" ng-keydown="keydown($event)" ng-keyup="keyup($event)" ng-focus="keydown($event)" ng-blur="hideOptions()">
+			 <span class="input-group-btn">
+				 <button type="button" class="btn btn-default" ng-click="toggleOptions()" ng-blur="hideOptions()" tabindex="-1">
+					 <span class="glyphicon glyphicon-chevron-down"></span>
+				 </button>
+			 </span>
+		 </div>
+		 <input type="hidden" id="shadow_{{title}}" ng-model="binding">
+		 <div style="display: none; position: absolute; z-index: 9999; background-color: white; max-height: 300px; overflow: auto;" class="list-group">
+			 <a ng-repeat="item in items" ng-click="enterSelected()" ng-mouseover="updateSelected($index)" class="list-group-item acOption{{$index}} acOptions">{{item.value}}</a>
+		 </div>
+       <p ng-show="help" class="help-block">{{help | localize}}</p>
     </div>
-	 <div class="col-sm-4" compile="preview"></div>
+	 <div class="col-sm-4" ng-show="!hidePreview" compile="preview"></div>
   </div>
