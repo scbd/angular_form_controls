@@ -1,7 +1,7 @@
 <span>
 
 	<script type="text/ng-template"  id="select-tree-renderer.html">
-		<a ng-click="clicked(item)">{{item.title||item.name | lstring:locale | truncate:120:'...'}}</a>
+		<a ng-click="clicked(item)" href="">{{item.title||item.name | lstring:locale | truncate:120:'...'}}</a>
 		<i class="glyphicon glyphicon-ok" ng-show="item.selected" style="position:absolute;top:5px;left:3px;"></i>
 		<ul class="dropdown-inline-submenu">
 			<li ng:repeat="item in item.children" ng-include="'select-tree-renderer.html'" style="position:relative">
@@ -16,8 +16,8 @@
 	</div>
 
 	<span>
-		<div class="btn-group" > <!-- do i need ng-click, now that i have ng-focus? -->
-			<button style="button" class="btn btn-default dropdown-toggle" ng-focus="giveFocus()" ng-class="{disabled:ngDisabledFn(), 'btn-info' : hasSelectedItems() }" data-toggle="dropdown">
+		<div class="btn-group" >
+			<button style="button" class="btn btn-default dropdown-toggle" ng-click="autoInit()" ng-class="{disabled:ngDisabledFn(), 'btn-info' : hasSelectedItems() }" data-toggle="dropdown">
 				{{getTitle(displayCount, true)}}
 				<span class="caret"></span>
 			</button>
@@ -29,7 +29,7 @@
 					<a href><em>Nothing to select...</em></a>
 				</li>
 				<li ng-show="!!rootItems && (getMinimum()==0 || allowOther == 'true')" style="padding:2px 20px" id="filterText">
-					<input type="textbox"  ng-show="getMinimum()==0 && rootItems.length!=0" ng-keydown="selectAndTab($event)" ng-model="filterText" style="width:95% !important" />
+					<input type="textbox"  ng-show="getMinimum()==0 && rootItems.length!=0" ng-model="filterText" style="width:95% !important" />
 					<i title="Clear search text" ng-show="filterText" ng-click="filterText='';" class="glyphicon glyphicon-remove" style="height:1px !important;width:1px !important;cursor:pointer"></i>
 					<button class="btn btn-xs btn-default" ng-show="getMinimum()==0 && (hasSelectedItems() || rootItems.length!=0)"      type ="button" ng-click="clearSelection()" ng-disabled="!hasSelectedItems()">Clear selection</button>
 					<button class="btn btn-xs btn-default" ng-show="allowOther == 'true'" type="button" ng-click="chooseOther()"    ng-show="allowOther">Specify another value</button>
