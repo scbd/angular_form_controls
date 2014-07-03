@@ -2,7 +2,7 @@
 	<head>
 		<title>A demo of the angular form controls</title>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
-		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.min.js"></script>
 		<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 		<script src="../bower_components/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
 		<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore.js"></script>
@@ -63,10 +63,6 @@
 				<h4>kmReference</h4>
 				<h5>Reference document (without an identifier it won't function here)</h5>
 				<km-reference ng-model="demoObject.openArray[16]" loader="loadRecords(identifier, 'measure')">
-					<div>
-						<div><strong>{{reference.title | lstring}}</strong></div>
-						<div>{{reference.summary | lstring}}</div>
-					</div>
 				</km-reference>
 
 				<h4>kmFormLanguages</h4>

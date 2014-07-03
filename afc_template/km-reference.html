@@ -4,7 +4,8 @@
 			<tr ng-repeat="reference in references" >
 				<td>
 					<div ng-show="!reference.__loading && !reference.__errorCode">
-						<div ng-transclude></div>
+						<div><strong>{{reference.title | lstring}}</strong>
+						<div>{{reference.summary | lstring}}</div>
 					</div>
 
 					<div ng-show="reference.__loading">
@@ -46,12 +47,13 @@
 				<div class="modal-body" style="max-height:400px;overflow-y:auto">
 
 					<table class="table table-hover">
-						<tr ng-repeat="reference in editor.references | filter:editor.search | filter:editor.filterExcludeSelected | orderBy:editor.sortReference" class="acOption{{$index}}">
+						<tr ng-repeat="reference in filteredReferences = (editor.references | filter:editor.search | filter:editor.filterExcludeSelected | orderBy:editor.sortReference)" class="acOption{{$index}}">
 							<td>
 								<input ng-keydown="keydown($event)" type="checkbox" ng-model="reference.__checked"/>
 							</td>
-							<td>
-								<div ng-transclude></div>
+							<td class="reference-summary-cell">
+								<div><strong>{{reference.title | lstring}}</strong>
+								<div>{{reference.summary | lstring}}</div>
 							</td>
 						</tr>
 

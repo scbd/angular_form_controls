@@ -1109,6 +1109,20 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				loaderFn  : "&loader",
 				orderByFn : "&orderBy"
 			},
+	/*
+			compile: function compile(tElement, tAttrs, tTransclude) {
+				//grab all transcluded html
+				var children = tElement.children();	
+
+				//look for the place where we want to insert the html
+				//ISSUE: tElement doesn't contain my template... I need my template somehow...
+				var template = tElement.find('.reference-summary-cell').append(children);
+
+				//append the new template to our compile element
+				tElement.html('');
+				tElement.append(template);
+			},
+	*/
 			link: function ($scope, $element, $attr, ngModelController) 
 			{
 				//Init
@@ -1132,7 +1146,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					if(_new!=_old && !_new) $element.find("#editReference").modal("hide");
 				});
 			},
-			controller: ["$scope", "authHttp", '$element', '$timeout', function ($scope, $http, $element, $timeout) 
+			controller: ["$scope", "authHttp", '$element', '$timeout', '$transclude', function ($scope, $http, $element, $timeout, $transclude) 
 			{
 				$scope.editor = {};
 				$scope.selected = -1;
@@ -1143,11 +1157,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 							--$scope.selected;
 					}
 					else if($event.which == 40) {
-						if($scope.selected < ($scope.editor.references.length - 1))
+						if($scope.selected < ($scope.filteredReferences.length - 1))
 							++$scope.selected;
 					}
 					else if($event.which == 13) {
-						$scope.editor.references[$scope.selected].__checked = true;
+						if($scope.selected !== -1 && $scope.selected < $scope.filteredReferences.length)
+							$scope.filteredReferences[$scope.selected].__checked = true;
 						$scope.editor.save();
 						$event.preventDefault();
 					}
@@ -1316,6 +1331,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 								$scope.references = [];
 
 							$scope.references.push(oNewRef);
+							console.log('refs: ', $scope.references);
 							$scope.save();
 
 							if (!$scope.multiple)
@@ -1368,8 +1384,6 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			}]
 		};
 	})
-
-
 
 	//============================================================
 	//
