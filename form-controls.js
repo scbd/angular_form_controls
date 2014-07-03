@@ -1142,7 +1142,13 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 				$scope.$watch("editor.visible", function(_new, _old) 
 				{ 
-					if(_new!=_old &&  _new) $element.find("#editReference").modal("show");
+					if(_new!=_old &&  _new) {
+						var editor = $element.find("#editReference");
+						editor.modal("show");
+						editor.on('shown.bs.modal', function() {
+							editor.find('.km-reference-search').focus();
+						});
+					}
 					if(_new!=_old && !_new) $element.find("#editReference").modal("hide");
 				});
 			},
@@ -1166,6 +1172,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						$scope.editor.save();
 						$event.preventDefault();
 					}
+
 					console.log('selected:', $scope.selected);
 				};
 				$scope.$watch('selected', function(newValue) {
