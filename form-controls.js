@@ -1381,6 +1381,9 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					if($scope.orderByFn)
 						return $scope.orderByFn({reference : ref});
 				}
+
+				//load all references ahead of time, so the user doesnt have to wait on first load.
+				$scope.loadAllReferences();
 			}]
 		};
 	})
