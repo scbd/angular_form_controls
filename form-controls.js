@@ -2680,8 +2680,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			$scope.updateSelected = function(index) {
 				$scope.selected = index;
 			};
-			$scope.enterSelected = function() {
+			$scope.enterSelected = function($index) {
 				$scope.binding = $scope.mapping($scope.current);
+			};
+			$scope.clickSelected = function($index) {
+				var specialElement = $scope.items[$index];
+				$scope.binding = $scope.mapping(specialElement);
 			};
 			$scope.keydown = function($event) {
 				//TODO: don't switch up and down if we aren't showing results yet.
@@ -2720,10 +2724,10 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				$element.find('.list-group').show();
 			};
 			$scope.hideOptions = function() {
-				$scope.buttonActivated = false;
 				//TODO: do this better... but it requires a bunch of work
 				//Honestly... the browser should trigger all events, before evaluating them, and an event should definitely be able to trigger while it has display: none... grrr....
 				$timeout(function() {
+					$scope.buttonActivated = false;
 					$element.find('.list-group').hide();
 					if(!$scope.binding)
 						$scope.bindingDisplay = ''; //we are blurring so blank out if no match

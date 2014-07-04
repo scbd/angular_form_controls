@@ -7,6 +7,6 @@
 			 </span>
 		 </div>
 		 <div style="display: none; position: absolute; z-index: 9999; background-color: white; max-height: 300px; overflow: auto;" class="list-group">
-			 <a ng-repeat="item in buttonOverrideFilter(bindingDisplay, items)" ng-click="enterSelected()" ng-mouseover="updateSelected($index)" class="list-group-item acOption{{$index}} acOptions">{{item.__value}}</a>
+			 <a ng-repeat="item in buttonOverrideFilter(bindingDisplay, items)" ng-click="clickSelected($index)" ng-mouseover="updateSelected($index)" class="list-group-item acOption{{$index}} acOptions">{{item.__value}}</a>
 		 </div>
 		 <div ng-show="!hidePreview" compile="preview"></div>
