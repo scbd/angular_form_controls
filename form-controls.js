@@ -2637,14 +2637,32 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
       scope: {
 		  binding: '=ngModel',
   		  source: '=',
+		  filter: '=?',
+		  mapping: '=?',
   		  preview: '=?',
-  		  placeholder: '@',
+  		  placeholder: '@?',
   		  maxmatches: '@?',
   		  minchars: '@?',
   		  selectbox: '@?',
       },
       templateUrl: '/afc_template/afc-autocomplete.html',
 		controller: function($scope, $element, $attrs, $compile, $timeout) {
+			$scope.items = []; //start empty, but then attempt to fill it.
+			$scope.source().then(function(items) {
+				$scope.items = items;
+			});
+			//TODO add a watch on .source()? im not sure...
+			
+			$scope.bindingDisplay = ""; //so the display won't be empty.
+
+			//TODO: inherit and create a separate control for selectboxes.
+			if($scope.mapping && !$scope.selectbox)
+				throw "You can't have a mapping without a selectbox. Mappings are only for selectbox configurations.";
+			if(!$scope.mapping)
+				$scope.mapping = function(item) {
+					return item.__value;
+				};
+
 			//TODO: showOptions should work if explicitly called.
 			//TODO: this is my, figure out how this works better, then improve it
 			if(typeof $scope.maxmatches == 'undefined') $scope.maxmatches = 7; 
@@ -2655,15 +2673,15 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			var minchars = $scope.minchars;
 
 			$scope.hidePreview = false;// TODO: make this an option.
-			if(typeof $scope.binding == "undefined")
-				$scope.binding = "";
+			//if(typeof $scope.binding == "undefined")
+			//	$scope.binding = "";
 			$scope.current = {};
 			$scope.selected = -1;
 			$scope.updateSelected = function(index) {
 				$scope.selected = index;
 			};
 			$scope.enterSelected = function() {
-				$scope.binding = $scope.current.value;
+				$scope.binding = $scope.mapping($scope.current);
 			};
 			$scope.keydown = function($event) {
 				//TODO: don't switch up and down if we aren't showing results yet.
@@ -2681,74 +2699,112 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					$scope.hideOptions();
 				}
 				else if($event.which == 9) {
-					if($scope.items.length === 1)
+					if($scope.filteredLength === 1)
 						$scope.enterSelected();
 				}
 			};
 			$scope.keyup = function($event) {
-				if($scope.bindingDisplay.length >= minchars && $scope.items.length <= maxmatches)
+				if($scope.bindingDisplay.length >= minchars && $scope.filteredLength <= maxmatches)
 					$scope.showOptions();
 				else
 					$element.find('.list-group').hide();
 			};
 			//TODO: is this function really necessary?
-			$scope.toggleOptions = function() {
+			//Toggle whether or not to show the options
+			$scope.toggleOptions = function(buttonActivate) {
+				if(buttonActivate && !$scope.buttonActivated)
+					$scope.buttonActivated = true;
 				$element.find('.list-group').toggle();
-				if($scope.items.length <= 0) //its possible the items werent ready the last time we applied the filter.
-					$scope.source($scope.bindingDisplay).then(function(result) {
-						$scope.items = result;
-					});
 			};
 			$scope.showOptions = function() {
 				$element.find('.list-group').show();
 			};
 			$scope.hideOptions = function() {
+				$scope.buttonActivated = false;
 				//TODO: do this better... but it requires a bunch of work
 				//Honestly... the browser should trigger all events, before evaluating them, and an event should definitely be able to trigger while it has display: none... grrr....
 				$timeout(function() {
 					$element.find('.list-group').hide();
-					$scope.bindingDisplay = $scope.binding;
+					if(!$scope.binding)
+						$scope.bindingDisplay = ''; //we are blurring so blank out if no match
+					else
+						setDisplayBinding($scope.binding);
 				}, 100);
 			};
 			var selectWatch = function(newValue) {
 				if($scope.selected != -1)
 				{
-					$scope.current = $scope.items[$scope.selected];
-					console.log('current: ', $scope.current);
+					$scope.source().then(function(items) {
+						var filteredItems = $scope.filter($scope.bindingDisplay, items);
+
+						//shortcut... TODO: i dunno about this
+						$scope.filteredLength = filteredItems.length;
+						$scope.current = filteredItems[$scope.selected];
+						console.log('current: ', $scope.current);
+					});
 				}
 			};
+
+			$scope.buttonOverrideFilter = function(bindingDisplay, items) {
+				if($scope.buttonActivated)
+					return items;
+				else
+					return $scope.filter(bindingDisplay, items);
+			};
+
+			function setDisplayBinding(newValue) {
+				if($scope.selectbox)
+					$scope.source().then(function(items) {
+						_.each(items, function(item) {
+							if(JSON.stringify($scope.mapping(item)) == JSON.stringify($scope.binding))
+								$scope.bindingDisplay = item.__value;
+						});
+						//TODO: add error, for if no item matched
+					});
+				else
+					$scope.bindingDisplay = $scope.binding;
+			}
 			$scope.$watch('binding', function(newValue) {
-				$scope.bindingDisplay = $scope.binding;
+				setDisplayBinding(newValue);
 			});
 			$scope.$watch('bindingDisplay', function(newValue) {
 				if(!$scope.selectbox)
 					$scope.binding = $scope.bindingDisplay;
 
-				$scope.source($scope.bindingDisplay).then(function(result) {
-					$scope.items = result;
+				$scope.source().then(function(items) {
+					var filteredItems = $scope.filter($scope.bindingDisplay, items);
+
+					//if selectbox, first try and match for binding, or clear binding otherwise
+					if($scope.selectbox) {
+						$scope.binding = null;
+						_.each(items, function(item) {
+							if(item.__value.toLowerCase() === $scope.bindingDisplay.toLowerCase())
+								$scope.binding = $scope.mapping(item);
+						});
+					}
 					
 					//reselected the one we had selected if possible.
 					if($scope.selected != -1) {
 						var i;
-						for(i = 0; i != $scope.items.length; ++i)
-							if($scope.items[i] == $scope.current) {
+						for(i = 0; i != filteredItems.length; ++i)
+							if(filteredItems[i] == $scope.current) {
 								$scope.selected = i; break;
 							}
 
-						if(i === $scope.items.length) {
+						if(i === filteredItems.length)
 							$scope.selected = 0;
-							selectWatch($scope.items[$scope.selected]);
-						}
+
+						selectWatch(filteredItems[$scope.selected]);
 					}
 					//else, if we have results and we didn't have anything selected, then select first item.
-					else if($scope.items.length !== 0) 
+					else if(filteredItems.length !== 0) 
 						$scope.selected = 0;
-
-					console.log('items:', $scope.items);
 				});
 
 			});
-			$scope.$watch('selected', selectWatch);
+			$scope.$watch('selected', function(newValue) {
+				selectWatch(newValue);
+			});
 			$scope.$watch('current', function(newValue) {
 				$element.find('.list-group-item-info').removeClass('list-group-item-info');
 				$element.find('.acOption'+$scope.selected).addClass('list-group-item-info');

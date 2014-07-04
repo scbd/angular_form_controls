@@ -99,27 +99,37 @@ app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', '$htt
 				return o.data;
 			});
 	};
+
+	$scope.ac_countries = function() {
+		return $http.get(
+			"/api/v2013/thesaurus/domains/countries/terms",
+			{ cache: true }).then(function(o){
+				_.each(o.data, function(element) {
+					element.__value = element.name;
+				});
+				return o.data;
+			});
+	};
+
 	$scope.countriesArray = [];
+	//TODO: I'll be using countries for the source.
 	$scope.countries().then(function(data) {
 		$scope.countriesArray = data;
 	});
 
-	$scope.autocompleteQuery = function($query) {
-		var deferred = $q.defer();
+	$scope.demoObject.openArray[8] = {identifier: 'au'};
+	$scope.mapping = function(item) {
+		return {identifier: item.identifier};
+	};
 
+	$scope.autocompleteQuery = function($query, items) {
 		var matchedOptions = [];
-		for(var i=0; i != $scope.countriesArray.length; ++i)
-			if($scope.countriesArray[i].name.toLowerCase().indexOf($query.toLowerCase()) !== -1)
-				matchedOptions.push({
-					value: $scope.countriesArray[i].name,
-					attrs: {
-						identifier: $scope.countriesArray[i].identifier,
-					},
-				});
+		for(var i=0; i != items.length; ++i)
+			if(items[i].__value.toLowerCase().indexOf($query.toLowerCase()) !== -1)
+				matchedOptions.push(items[i]);
 
 		console.log('options: ', matchedOptions);
-		deferred.resolve(matchedOptions);
-		return deferred.promise;
+		return matchedOptions;
 	};
 
   $scope.loadRecords = function(identifier, schema) {
