@@ -2890,16 +2890,16 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			locale = locale||"en";
 
 			if(term.customValue)
-				return lstring(term.customValue, locale);
+				return $filter("lstring")(term.customValue, locale);
 
 			if(cacheMap[term.identifier])
-				return lstring(cacheMap[term.identifier].title, locale) ;
+				return $filter("lstring")(cacheMap[term.identifier].title, locale) ;
 
 			cacheMap[term.identifier] = $http.get("/api/v2013/thesaurus/terms/"+encodeURIComponent(term.identifier),  {cache:true}).then(function(result) {
 
 				cacheMap[term.identifier] = result.data;
 
-				return lstring(cacheMap[term.identifier].title, locale);
+				return $filter("lstring")(cacheMap[term.identifier].title, locale);
 
 			}).catch(function(){
 
