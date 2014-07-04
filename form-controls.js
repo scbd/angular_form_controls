@@ -2876,7 +2876,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 	// 
 	//
 	//============================================================
-	.filter("term", ["$http", function($http) {
+	.filter("term", ["$http", '$filter', function($http, $filter) {
 		var cacheMap = {};
 
 		return function(term, locale) {
