@@ -2767,8 +2767,19 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					});
 				else
 					$scope.bindingDisplay = $scope.binding;
+
+				//mark the li items that are matched.
+				$element.find('.acOptions').removeClass('list-group-item-success');
+				$element.find('.glyphicon-ok').remove();
+				var arrayBindingDisplay = $scope.bindingDisplay;
+				if(typeof $scope.binding.length == 'undefined')
+					arrayBindingDisplay = [arrayBindingDisplay];
+				for(var i=0; i!=arrayBindingDisplay.length; ++i)
+					$element.find('.acOptions:contains("'+arrayBindingDisplay[i]+'")').addClass('list-group-item-success').append('&nbsp;<span class="glyphicon glyphicon-ok"></span>');
+
 			}
 			$scope.$watch('binding', function(newValue) {
+				console.log('newvl: ', newValue);
 				setDisplayBinding(newValue);
 			});
 			$scope.$watch('bindingDisplay', function(newValue) {
