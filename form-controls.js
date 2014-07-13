@@ -2772,7 +2772,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				$element.find('.acOptions').removeClass('list-group-item-success');
 				$element.find('.glyphicon-ok').remove();
 				var arrayBindingDisplay = $scope.bindingDisplay;
-				if($scope.binding || typeof $scope.binding.length == 'undefined')
+				if(typeof $scope.binding == 'undefined' || typeof $scope.binding.length == 'undefined')
 					arrayBindingDisplay = [arrayBindingDisplay];
 				for(var i=0; i!=arrayBindingDisplay.length; ++i)
 					$element.find('.acOptions:contains("'+arrayBindingDisplay[i]+'")').addClass('list-group-item-success').append('&nbsp;<span class="glyphicon glyphicon-ok"></span>');
