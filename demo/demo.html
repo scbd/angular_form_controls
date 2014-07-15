@@ -24,6 +24,15 @@
 				<h1>{{demoTitle}}</h1>
 				<h3>Requirements: Angular, underscore</h3>
 
+				<h4>autocomplete</h4>
+				<!--
+				<lwfc-autocomplete title="Autocomplete" maxmatches="14" placeholder="Type a Country" source="autocompleteQuery" help="some help text" preview="previewhtml" ng-model="demoObject.openArray[8]" selectbox="true"></lwfc-autocomplete>
+				<br /> <br />
+				-->
+				<div>
+					<afc-autocomplete maxmatches="14" placeholder="Type a Country" source="ac_countries" filter="autocompleteQuery" selectbox="true" mapping="mapping" ng-model="demoObject.openArray[8]"></afc-autocomplete>
+				</div>
+
 				<h4>kmNotes</h4>
 				<h5>Attaches a note to a user and timestamp</h5>
 				<km-notes placeholder="a placeholder" ng-model="demoObject.open1" rows="4"></km-notes>
@@ -67,15 +76,6 @@
 
 				<h4>kmFormLanguages</h4>
 				<km-form-languages ng-model="demoObject.openArray[17]"></km-form-languages>
-
-				<h4>autocomplete</h4>
-				<!--
-				<lwfc-autocomplete title="Autocomplete" maxmatches="14" placeholder="Type a Country" source="autocompleteQuery" help="some help text" preview="previewhtml" ng-model="demoObject.openArray[8]" selectbox="true"></lwfc-autocomplete>
-				<br /> <br />
-				-->
-				<div>
-					<afc-autocomplete maxmatches="14" placeholder="Type a Country" source="ac_countries" filter="autocompleteQuery" selectbox="true" mapping="mapping" ng-model="demoObject.openArray[8]"></afc-autocomplete>
-				</div>
 
 				<h4>lonlat-input</h4>
 				<lonlat-input ng-model="demoObject.openArray[7]" help="what are these lon lats even for? Help text."></lonlat-input>

@@ -2675,6 +2675,48 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			$scope.hidePreview = false;// TODO: make this an option.
 			//if(typeof $scope.binding == "undefined")
 			//	$scope.binding = "";
+
+			var prevValue;
+			function filterOptions() {
+				if(prevValue === $scope.bindingDisplay)
+					return;
+				else
+					prevValue = $scope.bindingDisplay;
+
+				if(!$scope.selectbox)
+					$scope.binding = $scope.bindingDisplay;
+
+				$scope.source().then(function(items) {
+					var filteredItems = $scope.filter($scope.bindingDisplay, items);
+
+					//if selectbox, first try and match for binding, or clear binding otherwise
+					if($scope.selectbox) {
+						$scope.binding = null;
+						_.each(items, function(item) {
+							if(item.__value.toLowerCase() === $scope.bindingDisplay.toLowerCase())
+								$scope.binding = $scope.mapping(item);
+						});
+					}
+					
+					//reselected the one we had selected if possible.
+					if($scope.selected != -1) {
+						var i;
+						for(i = 0; i != filteredItems.length; ++i)
+							if(filteredItems[i] == $scope.current) {
+								$scope.selected = i; break;
+							}
+
+						if(i === filteredItems.length)
+							$scope.selected = 0;
+
+						selectWatch(filteredItems[$scope.selected]);
+					}
+					//else, if we have results and we didn't have anything selected, then select first item.
+					else if(filteredItems.length !== 0) 
+						$scope.selected = 0;
+				});
+			};
+
 			$scope.current = {};
 			$scope.selected = -1;
 			$scope.updateSelected = function(index) {
@@ -2712,6 +2754,8 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					$scope.showOptions();
 				else
 					$element.find('.list-group').hide();
+
+				filterOptions();
 			};
 			//TODO: is this function really necessary?
 			//Toggle whether or not to show the options
@@ -2782,41 +2826,8 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				console.log('newvl: ', newValue);
 				setDisplayBinding(newValue);
 			});
-			$scope.$watch('bindingDisplay', function(newValue) {
-				if(!$scope.selectbox)
-					$scope.binding = $scope.bindingDisplay;
 
-				$scope.source().then(function(items) {
-					var filteredItems = $scope.filter($scope.bindingDisplay, items);
 
-					//if selectbox, first try and match for binding, or clear binding otherwise
-					if($scope.selectbox) {
-						$scope.binding = null;
-						_.each(items, function(item) {
-							if(item.__value.toLowerCase() === $scope.bindingDisplay.toLowerCase())
-								$scope.binding = $scope.mapping(item);
-						});
-					}
-					
-					//reselected the one we had selected if possible.
-					if($scope.selected != -1) {
-						var i;
-						for(i = 0; i != filteredItems.length; ++i)
-							if(filteredItems[i] == $scope.current) {
-								$scope.selected = i; break;
-							}
-
-						if(i === filteredItems.length)
-							$scope.selected = 0;
-
-						selectWatch(filteredItems[$scope.selected]);
-					}
-					//else, if we have results and we didn't have anything selected, then select first item.
-					else if(filteredItems.length !== 0) 
-						$scope.selected = 0;
-				});
-
-			});
 			$scope.$watch('selected', function(newValue) {
 				selectWatch(newValue);
 			});
