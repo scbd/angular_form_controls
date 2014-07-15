@@ -2687,7 +2687,8 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					$scope.binding = $scope.bindingDisplay;
 
 				$scope.source().then(function(items) {
-					var filteredItems = $scope.filter($scope.bindingDisplay, items);
+				 	console.log('filterOptions');
+					$scope.displayItems = $scope.filter($scope.bindingDisplay, items);
 
 					//if selectbox, first try and match for binding, or clear binding otherwise
 					if($scope.selectbox) {
@@ -2701,18 +2702,18 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					//reselected the one we had selected if possible.
 					if($scope.selected != -1) {
 						var i;
-						for(i = 0; i != filteredItems.length; ++i)
-							if(filteredItems[i] == $scope.current) {
+						for(i = 0; i != $scope.displayItems.length; ++i)
+							if($scope.displayItems[i] == $scope.current) {
 								$scope.selected = i; break;
 							}
 
-						if(i === filteredItems.length)
+						if(i === $scope.displayItems.length)
 							$scope.selected = 0;
 
-						selectWatch(filteredItems[$scope.selected]);
+						selectWatch($scope.displayItems[$scope.selected]);
 					}
 					//else, if we have results and we didn't have anything selected, then select first item.
-					else if(filteredItems.length !== 0) 
+					else if($scope.displayItems.length !== 0) 
 						$scope.selected = 0;
 				});
 			};
@@ -2733,11 +2734,11 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//TODO: don't switch up and down if we aren't showing results yet.
 				if($event.which == 38) {
 					if($scope.selected > 0)
-						--$scope.selected;
+						selectWatch(--$scope.selected);
 				}
 				else if($event.which == 40) {
 					if($scope.selected < ($scope.items.length - 1))
-						++$scope.selected;
+						selectWatch(++$scope.selected);
 				}
 				else if($event.which == 13) {
 					$scope.enterSelected();
@@ -2779,25 +2780,40 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						setDisplayBinding($scope.binding);
 				}, 100);
 			};
+
+			function changeCurrent() {
+				$element.find('.list-group-item-info').removeClass('list-group-item-info');
+				$element.find('.acOption'+$scope.selected).addClass('list-group-item-info');
+				//this is incase the item hasn't been rendered yet...
+				$timeout(function() {
+					$element.find('.list-group-item-info').removeClass('list-group-item-info');
+					$element.find('.acOption'+$scope.selected).addClass('list-group-item-info');
+				}, 100);
+			}
+
 			var selectWatch = function(newValue) {
 				if($scope.selected != -1)
 				{
 					$scope.source().then(function(items) {
-						var filteredItems = $scope.filter($scope.bindingDisplay, items);
+						console.log('select watch');
+						$scope.displayItems = $scope.filter($scope.bindingDisplay, items);
 
 						//shortcut... TODO: i dunno about this
-						$scope.filteredLength = filteredItems.length;
-						$scope.current = filteredItems[$scope.selected];
+						$scope.filteredLength = $scope.displayItems.length;
+						$scope.current = $scope.displayItems[$scope.selected];
+						changeCurrent();
 						console.log('current: ', $scope.current);
 					});
 				}
 			};
 
 			$scope.buttonOverrideFilter = function(bindingDisplay, items) {
+				console.log('button override');
 				if($scope.buttonActivated)
 					return items;
 				else
-					return $scope.filter(bindingDisplay, items);
+					//return $scope.filter(bindingDisplay, items);
+					return $scope.displayItems;
 			};
 
 			function setDisplayBinding(newValue) {
@@ -2825,20 +2841,6 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			$scope.$watch('binding', function(newValue) {
 				console.log('newvl: ', newValue);
 				setDisplayBinding(newValue);
-			});
-
-
-			$scope.$watch('selected', function(newValue) {
-				selectWatch(newValue);
-			});
-			$scope.$watch('current', function(newValue) {
-				$element.find('.list-group-item-info').removeClass('list-group-item-info');
-				$element.find('.acOption'+$scope.selected).addClass('list-group-item-info');
-				//this is incase the item hasn't been rendered yet...
-				$timeout(function() {
-					$element.find('.list-group-item-info').removeClass('list-group-item-info');
-					$element.find('.acOption'+$scope.selected).addClass('list-group-item-info');
-				}, 100);
 			});
 
 			$('input', $element).each(function() {
