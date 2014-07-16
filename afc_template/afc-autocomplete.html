@@ -1,4 +1,7 @@
 		 <div class="input-group">
+		    <span class="input-group-addon" ng-repeat="(i, display) in displaySpans track by $index">
+				 <input type="text" ng-model="displaySpans[i]" ng-blur="updateSpan(i, displaySpans[i])">
+			 </span>
 			 <input {{required}} type="{{type}}" class="form-control" id="{{title}}" placeholder="{{placeholder | localize}}" ng-model="bindingDisplay" ng-keydown="keydown($event)" ng-keyup="keyup($event)" ng-focus="keydown($event)" ng-blur="hideOptions()" ng-click="toggleOptions()">
 			 <span class="input-group-btn">
 				 <button type="button" class="btn btn-default" ng-click="toggleOptions(true);" ng-blur="hideOptions()" tabindex="-1">
@@ -7,6 +10,6 @@
 			 </span>
 		 </div>
 		 <div style="display: none; position: absolute; z-index: 9999; background-color: white; max-height: 300px; overflow: auto;" class="list-group">
-			 <a ng-repeat="item in buttonOverrideFilter(bindingDisplay, items)" ng-click="clickSelected($index)" ng-mouseover="updateSelected($index)" class="list-group-item acOption{{$index}} acOptions">{{item.__value}}</a>
+			 <a ng-repeat="item in buttonOverrideFilter(bindingDisplay, items)" ng-click="clickSelected($index)" ng-mouseover="updateSelected($index)" class="list-group-item" ng-class="{'list-group-item-success': displaySpans.indexOf(item.__value)!=-1}">{{item.__value}}&nbsp;<span ng-show="displaySpans.indexOf(item.__value) != -1" class="glyphicon glyphicon-ok"></span></a>
 		 </div>
 		 <div ng-show="!hidePreview" compile="preview"></div>

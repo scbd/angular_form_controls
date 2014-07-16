@@ -118,6 +118,7 @@ app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', '$htt
 	});
 
 	$scope.demoObject.openArray[8] = {identifier: 'au'};
+	$scope.demoObject.openArray[18] = [{identifier: 'ca'}, {identifier: 'au'}];
 	$scope.mapping = function(item) {
 		return {identifier: item.identifier};
 	};

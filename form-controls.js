@@ -2644,6 +2644,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
   		  maxmatches: '@?',
   		  minchars: '@?',
   		  selectbox: '@?',
+		  multiple: '@?',
       },
       templateUrl: '/afc_template/afc-autocomplete.html',
 		controller: function($scope, $element, $attrs, $compile, $timeout) {
@@ -2654,6 +2655,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			//TODO add a watch on .source()? im not sure...
 			
 			$scope.bindingDisplay = ""; //so the display won't be empty.
+			$scope.displaySpans = [];
 
 			//TODO: inherit and create a separate control for selectboxes.
 			if($scope.mapping && !$scope.selectbox)
@@ -2675,6 +2677,8 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			$scope.hidePreview = false;// TODO: make this an option.
 			//if(typeof $scope.binding == "undefined")
 			//	$scope.binding = "";
+			if($scope.multiple == 'true' && typeof $scope.binding == 'undefined')
+				$scope.binding = [];
 
 			var prevValue;
 			function filterOptions() {
@@ -2683,15 +2687,14 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				else
 					prevValue = $scope.bindingDisplay;
 
-				if(!$scope.selectbox)
+				if(!$scope.selectbox && !$scope.multiple)
 					$scope.binding = $scope.bindingDisplay;
 
 				$scope.source().then(function(items) {
-				 	console.log('filterOptions');
 					$scope.displayItems = $scope.filter($scope.bindingDisplay, items);
 
 					//if selectbox, first try and match for binding, or clear binding otherwise
-					if($scope.selectbox) {
+					if($scope.selectbox && !$scope.multiple) {
 						$scope.binding = null;
 						_.each(items, function(item) {
 							if(item.__value.toLowerCase() === $scope.bindingDisplay.toLowerCase())
@@ -2724,11 +2727,34 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				$scope.selected = index;
 			};
 			$scope.enterSelected = function($index) {
-				$scope.binding = $scope.mapping($scope.current);
+				if($scope.multiple)
+					$scope.binding.push($scope.mapping($scope.current));
+				else
+					$scope.binding = $scope.mapping($scope.current);
 			};
+			function indexOfPredicate(array, predicate) {
+				for(var i=0; i!=array.length; ++i)
+					if(predicate(array[i]))
+						return i;
+
+				return -1;
+			}
 			$scope.clickSelected = function($index) {
 				var specialElement = $scope.items[$index];
-				$scope.binding = $scope.mapping(specialElement);
+				var mapping = $scope.mapping(specialElement);
+				if($scope.multiple) {
+					if((spliceIndex = indexOfPredicate($scope.binding, function(item) {
+								return _.isEqual(item, mapping);
+							})) != -1) {
+						$scope.binding.splice(spliceIndex, 1);
+						$scope.displaySpans.splice(spliceIndex, 1);
+					} else {
+						$scope.binding.push(mapping);
+						$scope.displaySpans.push(specialElement.__value);
+					}
+				}
+				else
+					$scope.binding = $scope.mapping(specialElement);
 			};
 			$scope.keydown = function($event) {
 				//TODO: don't switch up and down if we aren't showing results yet.
@@ -2774,41 +2800,46 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				$timeout(function() {
 					$scope.buttonActivated = false;
 					$element.find('.list-group').hide();
-					if(!$scope.binding)
-						$scope.bindingDisplay = ''; //we are blurring so blank out if no match
-					else
-						setDisplayBinding($scope.binding);
-				}, 100);
-			};
 
-			function changeCurrent() {
-				$element.find('.list-group-item-info').removeClass('list-group-item-info');
-				$element.find('.acOption'+$scope.selected).addClass('list-group-item-info');
-				//this is incase the item hasn't been rendered yet...
-				$timeout(function() {
-					$element.find('.list-group-item-info').removeClass('list-group-item-info');
-					$element.find('.acOption'+$scope.selected).addClass('list-group-item-info');
-				}, 100);
-			}
+					var string = $scope.bindingDisplay;
+					if(!$scope.multiple)
+						return;
+
+					if($scope.selectbox)
+						$scope.source().then(function(items) {
+							var results = $scope.filter(string, items);
+							if(results.length === 1 && results[0].__value == string) {
+								$scope.binding.push = results[0];
+								$scope.displaySpans.push(results[0].__value);
+							}
+							else if(results.length > 1)
+								for(var i=0; i!=results.length; ++i)
+									if(results[i].__value == string)
+										$scope.binding.push = results[i];
+
+							$scope.bindingDisplay = '';
+					});
+					else
+						if(string != '')
+							$scope.binding.push(string);
+
+				}, 200);
+			};
 
 			var selectWatch = function(newValue) {
 				if($scope.selected != -1)
 				{
 					$scope.source().then(function(items) {
-						console.log('select watch');
 						$scope.displayItems = $scope.filter($scope.bindingDisplay, items);
 
 						//shortcut... TODO: i dunno about this
 						$scope.filteredLength = $scope.displayItems.length;
 						$scope.current = $scope.displayItems[$scope.selected];
-						changeCurrent();
-						console.log('current: ', $scope.current);
 					});
 				}
 			};
 
 			$scope.buttonOverrideFilter = function(bindingDisplay, items) {
-				console.log('button override');
 				if($scope.buttonActivated)
 					return items;
 				else
@@ -2816,33 +2847,72 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					return $scope.displayItems;
 			};
 
-			function setDisplayBinding(newValue) {
+			function reverseMap(value, items) {
+					var foundItem = '';
+					_.each(items, function(item) {
+						if(JSON.stringify($scope.mapping(item)) == JSON.stringify(value))
+							foundItem = item.__value;
+					});
+					//TODO: add error, for if no item matched
+
+					return foundItem;
+			};
+
+			$scope.updateSpan = function(index, string) {
 				if($scope.selectbox)
 					$scope.source().then(function(items) {
-						_.each(items, function(item) {
-							if(JSON.stringify($scope.mapping(item)) == JSON.stringify($scope.binding))
-								$scope.bindingDisplay = item.__value;
-						});
-						//TODO: add error, for if no item matched
+						var results = $scope.filter(string, items);
+						if(results.length === 1 && results[0].__value == string)
+							return $scope.binding[index] = results[0];
+						else if(results.length > 1)
+							for(var i=0; i!=results.length; ++i)
+								if(results[i].__value == string)
+									return $scope.binding[index] = results[i];
+
+						//if there was no match, then remove the item.
+						console.log('removing...');
+						$scope.binding.splice(index, 1);
+						$scope.displaySpans.splice(index, 1);
 					});
-				else
-					$scope.bindingDisplay = $scope.binding;
+				else {
+					if(string == '') {
+						console.log('removing...b');
+						$scope.binding.splice(index, 1);
+						$scope.displaySpans.splice(index, 1);
+					} else
+						$scope.binding[index] = string;
+				}
+			};
 
-				//mark the li items that are matched.
-				$element.find('.acOptions').removeClass('list-group-item-success');
-				$element.find('.glyphicon-ok').remove();
-				var arrayBindingDisplay = $scope.bindingDisplay;
-				if(!$scope.binding || typeof $scope.binding.length == 'undefined')
-					arrayBindingDisplay = [arrayBindingDisplay];
-				for(var i=0; i!=arrayBindingDisplay.length; ++i)
-					$element.find('.acOptions:contains("'+arrayBindingDisplay[i]+'")').addClass('list-group-item-success').append('&nbsp;<span class="glyphicon glyphicon-ok"></span>');
+//TODO: Is this really necessary anymore?????
+			function setDisplayBinding(newValue) {
+				if($scope.multiple) {
+					if($scope.selectbox)
+						$scope.source().then(function(items) {
+							for(var i=0; i!=$scope.binding.length; ++i)
+								$scope.displaySpans[i] = reverseMap($scope.binding[i], items);
+						});
+					else {
+						for(var i=0; i!=$scope.binding.length; ++i)
+							$scope.displaySpans[i] = $scope.binding[i];
+					}
 
+				} else {
+					if($scope.selectbox)
+						$scope.source().then(function(items) {
+							$scope.bindingDisplay = reverseMap($scope.binding, items);
+						});
+					else
+						$scope.bindingDisplay = $scope.binding;
+				}
 			}
+
 			$scope.$watch('binding', function(newValue) {
 				console.log('newvl: ', newValue);
 				setDisplayBinding(newValue);
 			});
 
+			//transfer attributes to the internal input
 			$('input', $element).each(function() {
 				for(var i in $attrs)
 					if(i.substr(0,1) != '$' && !$scope[i] && i != 'ngModel')
