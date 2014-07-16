@@ -2727,8 +2727,10 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				$scope.selected = index;
 			};
 			$scope.enterSelected = function($index) {
-				if($scope.multiple)
+				if($scope.multiple) {
 					$scope.binding.push($scope.mapping($scope.current));
+					$scope.displaySpans.push($scope.current.__value);
+				}
 				else
 					$scope.binding = $scope.mapping($scope.current);
 			};
@@ -2740,7 +2742,8 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				return -1;
 			}
 			$scope.clickSelected = function($index) {
-				var specialElement = $scope.items[$index];
+				//Either the full list or the filtered list, depending on what is currently showing.
+				var specialElement = $scope.buttonOverrideFilter($scope.bindingDisplay, $scope.items)[$index];
 				var mapping = $scope.mapping(specialElement);
 				if($scope.multiple) {
 					if((spliceIndex = indexOfPredicate($scope.binding, function(item) {
@@ -2775,6 +2778,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					if($scope.filteredLength === 1)
 						$scope.enterSelected();
 				}
+				console.log('selected: ', $scope.selected);
 			};
 			$scope.keyup = function($event) {
 				if($scope.bindingDisplay.length >= minchars && $scope.filteredLength <= maxmatches)
