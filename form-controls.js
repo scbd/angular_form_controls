@@ -2652,7 +2652,6 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			$scope.source().then(function(items) {
 				$scope.items = items;
 			});
-			//TODO add a watch on .source()? im not sure...
 			
 			$scope.bindingDisplay = ""; //so the display won't be empty.
 			$scope.displaySpans = [];
@@ -2665,8 +2664,6 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					return item.__value;
 				};
 
-			//TODO: showOptions should work if explicitly called.
-			//TODO: this is my, figure out how this works better, then improve it
 			if(typeof $scope.maxmatches == 'undefined') $scope.maxmatches = 7; 
 			else if($scope.maxmatches <= 0)	$scope.maxmatches = 999999;
 			if(typeof $scope.minchars == 'undefined') $scope.minchars = 1; 
@@ -2674,12 +2671,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			var maxmatches = $scope.maxmatches;
 			var minchars = $scope.minchars;
 
-			$scope.hidePreview = false;// TODO: make this an option.
-			//if(typeof $scope.binding == "undefined")
-			//	$scope.binding = "";
+			$scope.hidePreview = false;
 			if($scope.multiple == 'true' && typeof $scope.binding == 'undefined')
 				$scope.binding = [];
 
+			$scope.current = {};
+			$scope.selected = -1;
 			var prevValue;
 			function filterOptions() {
 				if(prevValue === $scope.bindingDisplay)
@@ -2695,7 +2692,6 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 					//if selectbox, first try and match for binding, or clear binding otherwise
 					if($scope.selectbox && !$scope.multiple) {
-						$scope.binding = null;
 						_.each(items, function(item) {
 							if(item.__value.toLowerCase() === $scope.bindingDisplay.toLowerCase())
 								$scope.binding = $scope.mapping(item);
@@ -2706,23 +2702,26 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					if($scope.selected != -1) {
 						var i;
 						for(i = 0; i != $scope.displayItems.length; ++i)
-							if($scope.displayItems[i] == $scope.current) {
+							if($scope.displayItems[i].__value == $scope.current.__value) {
 								$scope.selected = i; break;
 							}
 
 						if(i === $scope.displayItems.length)
 							$scope.selected = 0;
-
-						selectWatch($scope.displayItems[$scope.selected]);
 					}
 					//else, if we have results and we didn't have anything selected, then select first item.
 					else if($scope.displayItems.length !== 0) 
 						$scope.selected = 0;
+
+					selectWatch($scope.displayItems[$scope.selected]);
 				});
 			};
 
-			$scope.current = {};
-			$scope.selected = -1;
+			$scope.removeSpan = function(index) {
+				$scope.binding.splice(index, 1);
+				$scope.displaySpans.splice(index, 1);
+			};
+
 			$scope.updateSelected = function(index) {
 				$scope.selected = index;
 			};
@@ -2749,8 +2748,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					if((spliceIndex = indexOfPredicate($scope.binding, function(item) {
 								return _.isEqual(item, mapping);
 							})) != -1) {
-						$scope.binding.splice(spliceIndex, 1);
-						$scope.displaySpans.splice(spliceIndex, 1);
+						$scope.removeSpan(spliceIndex);
 					} else {
 						$scope.binding.push(mapping);
 						$scope.displaySpans.push(specialElement.__value);
@@ -2774,11 +2772,15 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					$event.preventDefault();
 					$scope.hideOptions();
 				}
-				else if($event.which == 9) {
-					if($scope.filteredLength === 1)
+				else if($event.which == 9 && $event.which == 188) {
+					if($scope.filteredLength === 1) {
 						$scope.enterSelected();
+						if($scope.multiple) {
+							$event.preventDefault();
+							$scope.hideOptions();
+						}
+					}
 				}
-				console.log('selected: ', $scope.selected);
 			};
 			$scope.keyup = function($event) {
 				if($scope.bindingDisplay.length >= minchars && $scope.filteredLength <= maxmatches)
@@ -2791,13 +2793,16 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			//TODO: is this function really necessary?
 			//Toggle whether or not to show the options
 			$scope.toggleOptions = function(buttonActivate) {
-				if(buttonActivate && !$scope.buttonActivated)
+				if(buttonActivate && !$scope.buttonActivated) {
 					$scope.buttonActivated = true;
-				$element.find('.list-group').toggle();
+					$scope.showOptions();
+				} else
+					$element.find('.list-group').hide();
 			};
 			$scope.showOptions = function() {
 				$element.find('.list-group').show();
 			};
+			//TODO: rename to updateHideOptions
 			$scope.hideOptions = function() {
 				//TODO: do this better... but it requires a bunch of work
 				//Honestly... the browser should trigger all events, before evaluating them, and an event should definitely be able to trigger while it has display: none... grrr....
@@ -2806,9 +2811,24 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					$element.find('.list-group').hide();
 
 					var string = $scope.bindingDisplay;
-					if(!$scope.multiple)
-						return;
+					if(!$scope.multiple) {
+						if($scope.selectbox) {
+							$scope.binding = null;
+							var changed = false;
+							_.each($scope.items, function(item) {
+								if(item.__value.toLowerCase() === $scope.bindingDisplay.toLowerCase()) {
+									$scope.binding = $scope.mapping(item);
+									changed = true;
+								}
+							});
+							if(!changed)
+								$scope.binding = null;
+						}
 
+						return;
+					}
+
+					//for multiple only. For single, the binding is constantly updated.
 					if($scope.selectbox)
 						$scope.source().then(function(items) {
 							var results = $scope.filter(string, items);
@@ -2874,22 +2894,18 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 									return $scope.binding[index] = results[i];
 
 						//if there was no match, then remove the item.
-						console.log('removing...');
-						$scope.binding.splice(index, 1);
-						$scope.displaySpans.splice(index, 1);
+						$scope.removeSpan(index);
 					});
 				else {
-					if(string == '') {
-						console.log('removing...b');
-						$scope.binding.splice(index, 1);
-						$scope.displaySpans.splice(index, 1);
-					} else
+					if(string == '')
+						$scope.removeSpan(index);
+					else
 						$scope.binding[index] = string;
 				}
 			};
 
-//TODO: Is this really necessary anymore?????
-			function setDisplayBinding(newValue) {
+			$scope.$watch('binding', function(newValue) {
+				console.log('newValue: ', newValue);
 				if($scope.multiple) {
 					if($scope.selectbox)
 						$scope.source().then(function(items) {
@@ -2909,11 +2925,6 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					else
 						$scope.bindingDisplay = $scope.binding;
 				}
-			}
-
-			$scope.$watch('binding', function(newValue) {
-				console.log('newvl: ', newValue);
-				setDisplayBinding(newValue);
 			});
 
 			//transfer attributes to the internal input

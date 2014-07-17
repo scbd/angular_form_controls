@@ -1,6 +1,6 @@
 		 <div class="input-group">
 		    <span class="input-group-addon" style="padding: 0px" ng-repeat="(i, display) in displaySpans track by $index">
-				 <input type="text" ng-model="displaySpans[i]" ng-blur="updateSpan(i, displaySpans[i])">
+				 <input type="text" ng-model="displaySpans[i]" ng-blur="updateSpan(i, displaySpans[i])"><a ng-click="removeSpan(i)" class="glyphicon glyphicon-remove"></a>
 			 </span>
 			 <input {{required}} type="{{type}}" class="form-control" id="{{title}}" placeholder="{{placeholder | localize}}" ng-model="bindingDisplay" ng-keydown="keydown($event)" ng-keyup="keyup($event)" ng-focus="keydown($event)" ng-blur="hideOptions()" ng-click="toggleOptions()">
 			 <span class="input-group-btn">
