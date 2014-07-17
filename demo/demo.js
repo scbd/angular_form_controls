@@ -104,6 +104,7 @@ app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', '$htt
 		return $http.get(
 			"/api/v2013/thesaurus/domains/countries/terms",
 			{ cache: true }).then(function(o){
+				//TODO: Everytime we use the source() items we foreach through this... it'd be cool to have a cache or something... perhaps angular cachefactory?
 				_.each(o.data, function(element) {
 					element.__value = element.name;
 				});
@@ -118,6 +119,7 @@ app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', '$htt
 	});
 
 	$scope.demoObject.openArray[8] = {identifier: 'au'};
+	$scope.demoObject.openArray[18] = [{identifier: 'ca'}, {identifier: 'au'}];
 	$scope.mapping = function(item) {
 		return {identifier: item.identifier};
 	};
