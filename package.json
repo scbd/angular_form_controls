@@ -1,23 +1,36 @@
 {
   "name": "angular_form_controls",
-  "version": "0.1.0",
-  "description": "A collection of angular directives for initiating form controls.",
-  "main": "demo/demo.html",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/scbd/angular_form_controls.git"
-  },
-  "keywords": [
-    "angular",
-    "forms",
-    "inputs"
+  "version": "0.3.0",
+  "homepage": "https://github.com/scbd/angular_form_controls",
+  "authors": [
+    "Jason McCarrell <jason.abz@gmail.com>"
   ],
-  "author": "CDB",
-  "license": "BSD-2-Clause",
-  "bugs": {
-    "url": "https://github.com/scbd/angular_form_controls/issues"
-  }
+  "description": "A collection of angular directives for form controls.",
+  "main": "demo/demo.html",
+  "keywords": [
+    "angular"
+  ],
+  "dependencies": {
+    "ng-tags-input": "latest",
+    "leaflet-0.7.2": "http://leaflet-cdn.s3.amazonaws.com/build/leaflet-0.7.2.zip",
+	 "ngLocalizer": "latest",
+	 "angular-sanitize": "latest",
+	 "angular": "latest",
+	 "bootstrap": "latest",
+	 "bootstrap-datepicker": "~1.3.0",
+	 "linqjs": "latest"
+  },
+  "devDependencies": {
+	  "jquery": "2.1.0",
+	  "underscore": "1.6.0"
+  },
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
 }
