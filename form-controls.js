@@ -1,7 +1,7 @@
 angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 	.value('realm', 'ABS') //needed for some controls
 
-	
+
 	//============================================================
 	//
 	//
@@ -23,12 +23,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 	        link: function ($scope, $element, attrs, ngModelController) {
 	            $scope.timestamp = Date.now();
 	            $scope.skipLoad = false;
-	            $scope.texts = [];            
+	            $scope.texts = [];
 	            $scope.$watch('binding', $scope.load);
 	            $scope.$watch('binding', function () {
 	                ngModelController.$setViewValue($scope.binding);
 	            });
-	           
+
 	        },
             controller: ["$scope", function ($scope) {
 	                //==============================
@@ -103,7 +103,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 	//
 	//
 	//============================================================
-	.directive('kmTextboxMl', function ($http) 
+	.directive('kmTextboxMl', function ($http)
 	{
 		return {
 			restrict: 'EAC',
@@ -119,7 +119,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				required   : "@",
 				ngChange   : "&"
 			},
-			link: function ($scope, element, attrs, ngModelController) 
+			link: function ($scope, element, attrs, ngModelController)
 			{
 				$scope.text = {}
 				$scope.$watch('locales', $scope.watchLocales);
@@ -129,12 +129,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				});
 
 			},
-			controller : ["$scope", function ($scope) 
+			controller : ["$scope", function ($scope)
 			{
 				//==============================
 				//Remove value of not selected languages/empty languages
 				//==============================
-				$scope.watchLocales = function() 
+				$scope.watchLocales = function()
 				{
 					var oLocales = $scope.locales || [];
 					var oBinding = $scope.binding || {};
@@ -147,7 +147,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				//Remove value of not selected languages/empty languages
 				//==============================
-				$scope.watchBinding = function() 
+				$scope.watchBinding = function()
 				{
 					var oLocales = $scope.locales || [];
 					var oBinding = $scope.binding || {};
@@ -160,7 +160,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				//Remove value of not selected languages/empty languages
 				//==============================
-				$scope.onchange = function() 
+				$scope.onchange = function()
 				{
 					var oLocales    = $scope.locales || [];
 					var oText       = $scope.text    || {};
@@ -169,7 +169,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					angular.forEach(oLocales, function(locale, i)
 					{
 						if($.trim(oText[locale])!="")
-							oNewBinding[locale] = oText[locale]; 
+							oNewBinding[locale] = oText[locale];
 					});
 
 					$scope.binding = !$.isEmptyObject(oNewBinding) ? oNewBinding : undefined;
@@ -181,7 +181,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				$scope.isRequired = function()
 				{
-					return $scope.required!=undefined 
+					return $scope.required!=undefined
 						&& $.isEmptyObject($scope.binding);
 				}
 
@@ -214,7 +214,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				type        : "@type",
 				required    : "@"
 			},
-			link: function ($scope, $element, attrs, ngModelController) 
+			link: function ($scope, $element, attrs, ngModelController)
 			{
 				$scope.skipLoad = false;
 				$scope.texts    = [];
@@ -223,12 +223,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					ngModelController.$setViewValue($scope.binding);
 				});
 			},
-			controller: ["$scope", function ($scope) 
+			controller: ["$scope", function ($scope)
 			{
 				//==============================
 				//
 				//==============================
-				$scope.load = function () 
+				$scope.load = function ()
 				{
 					if($scope.skipLoad)
 					{
@@ -245,11 +245,11 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						$scope.texts.push({value : text});
 					});
 				};
-				
+
 				//==============================
 				//
 				//==============================
-				$scope.remove = function (index) 
+				$scope.remove = function (index)
 				{
 					$scope.texts.splice(index, 1);
 
@@ -259,7 +259,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				//
 				//==============================
-				$scope.save = function () 
+				$scope.save = function ()
 				{
 					var oNewBinding = [];
 					var oText       = $scope.texts;
@@ -277,12 +277,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				//
 				//==============================
-				$scope.getTexts = function () 
+				$scope.getTexts = function ()
 				{
 					if($scope.texts.length==0)
 						$scope.texts.push({value : ""});
 
-					var sLastValue = $scope.texts[$scope.texts.length-1].value; 
+					var sLastValue = $scope.texts[$scope.texts.length-1].value;
 
 					//NOTE: IE can set value to 'undefined' for a moment
 					if(sLastValue && sLastValue!="")
@@ -296,7 +296,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				$scope.isRequired = function()
 				{
-					return $scope.required!=undefined 
+					return $scope.required!=undefined
 						&& $.isEmptyObject($scope.binding);
 				}
 			}]
@@ -307,7 +307,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 	//
 	//
 	//============================================================
-	.directive('kmTerms', function ($http) 
+	.directive('kmTerms', function ($http)
 	{
 		return {
 			restrict: 'EAC',
@@ -316,18 +316,18 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			scope: {
 				binding : '=ngModel',
 			},
-			link: function ($scope, element, attrs, controller) 
+			link: function ($scope, element, attrs, controller)
 			{
 				$scope.termsX = [];
 				$scope.terms = [];
 				$scope.$watch('binding', $scope.load);
 			},
-			controller: ["$scope", "$q", function ($scope, $q) 
+			controller: ["$scope", "$q", function ($scope, $q)
 			{
 				//==============================
 				//
 				//==============================
-				$scope.load = function() 
+				$scope.load = function()
 				{
 					$scope.terms = [];
 					var oBinding = null;
@@ -389,7 +389,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				required    : "@",
 				layout      : "@"
 			},
-			link: function ($scope, $element, $attr, ngModelController) 
+			link: function ($scope, $element, $attr, ngModelController)
 			{
 				$scope.identifiers = null;
 				$scope.terms       = null;
@@ -408,7 +408,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					$element.addClass("list-unstyled");
 
 			},
-			controller: ["$scope", "$q", "Thesaurus", '$timeout', function ($scope, $q, thesaurus, $timeout) 
+			controller: ["$scope", "$q", "Thesaurus", '$timeout', function ($scope, $q, thesaurus, $timeout)
 			{
 				//==============================
 				//
@@ -422,7 +422,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					if(qData==undefined)
 						$timeout($scope.init, 250); // MEGA UGLY PATCH
 
-					$q.when(qData, 
+					$q.when(qData,
 						function(data) { // on success
 							$scope.__loading = false;
 							$scope.terms     = data;
@@ -435,7 +435,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				//
 				//==============================
-				$scope.load = function() 
+				$scope.load = function()
 				{
 					if (!$scope.terms) // Not initialized
 						return;
@@ -465,14 +465,14 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				//
 				//==============================
-				$scope.save = function() 
+				$scope.save = function()
 				{
 					if(!$scope.identifiers)
 						return;
 
 					var oNewBinding = [];
 
-					angular.forEach($scope.terms, function(term, i) 
+					angular.forEach($scope.terms, function(term, i)
 					{
 						if(term==undefined) return //IE8 BUG
 
@@ -496,7 +496,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				$scope.isRequired = function()
 				{
-					return $scope.required!=undefined 
+					return $scope.required!=undefined
 						&& $.isEmptyObject($scope.binding);
 				}
 
@@ -554,7 +554,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				layout      : "@",
 				required    : "@"
 			},
-			link: function ($scope, $element, $attr, ngModelController) 
+			link: function ($scope, $element, $attr, ngModelController)
 			{
 
 				$scope.description = true;
@@ -574,7 +574,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				if(!$attr["class"])
 					$element.addClass("list-unstyled");
 			},
-			controller: ["$scope", "$q", "Thesaurus", function ($scope, $q, thesaurus) 
+			controller: ["$scope", "$q", "Thesaurus", function ($scope, $q, thesaurus)
 			{
 				//==============================
 				//
@@ -583,7 +583,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					$scope.setError(null);
 					$scope.__loading = true;
 
-					$q.when($scope.termsFn(), 
+					$q.when($scope.termsFn(),
 						function(data) { // on success
 							$scope.__loading = false;
 							$scope.terms     = data;
@@ -596,7 +596,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				//
 				//==============================
-				$scope.load = function() 
+				$scope.load = function()
 				{
 					if (!$scope.terms) // Not initialized
 						return;
@@ -623,7 +623,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				//
 				//==============================
-				$scope.save = function() 
+				$scope.save = function()
 				{
 					//debugger;
 
@@ -651,7 +651,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				$scope.isRequired = function()
 				{
-					return $scope.required!=undefined 
+					return $scope.required!=undefined
 						&& $.isEmptyObject($scope.binding);
 				}
 
@@ -710,7 +710,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				mimeTypes  : "@",
 				extensions : "="
 			},
-			link: function ($scope, $element, $attr, ngModelController) 
+			link: function ($scope, $element, $attr, ngModelController)
 			{
 				// init
 				$scope.links = [];
@@ -779,7 +779,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 				}
 			},
-			controller: ["$scope", "IStorage", function ($scope, storage) 
+			controller: ["$scope", "IStorage", function ($scope, storage)
 			{
 				$scope.editor = {};
 
@@ -816,7 +816,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 						oNewLink.url = $.trim(link.url);
 
-						if(link.name && $.trim(link.name)!="") 
+						if(link.name && $.trim(link.name)!="")
 							oNewLink.name = $.trim(link.name);
 
 						//
@@ -839,7 +839,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				$scope.isRequired = function()
 				{
-					return $scope.required!=undefined 
+					return $scope.required!=undefined
 						&& $.isEmptyObject($scope.binding);
 				}
 
@@ -850,7 +850,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				{
 					if(!this.isAllowLink())
 						return;
-						
+
 					$scope.editor.editLink(null);
 				}
 
@@ -864,14 +864,14 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 					if(!$scope.identifier)
 						throw "identifier not specified";
-					
+
 					$scope.editor.editFile(null);
 				}
 
 				//==============================
 				//
 				//==============================
-				$scope.remove = function(link) 
+				$scope.remove = function(link)
 				{
 					$scope.links.splice($scope.links.indexOf(link), 1);
 					$scope.save();
@@ -962,7 +962,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					$scope.editor.uploadPlaceholder.prepend("<input type='file' style='display:none' />");
 
 					var qHtmlInputFile = $scope.editor.uploadPlaceholder.children("input[type=file]:first");
-		
+
 					qHtmlInputFile.change(function()
 					{
 						var file = this.files[0];
@@ -1007,7 +1007,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 								});
 						});
 					});
-		
+
 					qHtmlInputFile.click();
 				}
 
@@ -1057,7 +1057,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					console.log('xhr.upload error: ' + message)
 
 					$scope.editor.error = message;
-					
+
 					if($scope.editor.progress)
 						$scope.editor.progress.style   = "error";
 				}
@@ -1086,7 +1086,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					if (obj === null) return null;
 
 					return _.clone(obj);
-				}	
+				}
 
 			}]
 		}
@@ -1112,7 +1112,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 	/*
 			compile: function compile(tElement, tAttrs, tTransclude) {
 				//grab all transcluded html
-				var children = tElement.children();	
+				var children = tElement.children();
 
 				//look for the place where we want to insert the html
 				//ISSUE: tElement doesn't contain my template... I need my template somehow...
@@ -1123,7 +1123,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				tElement.append(template);
 			},
 	*/
-			link: function ($scope, $element, $attr, ngModelController) 
+			link: function ($scope, $element, $attr, ngModelController)
 			{
 				//Init
 				$scope.references = [];
@@ -1134,14 +1134,14 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				});
 
 				//Watchers
-				 
+
 				$scope.$watch("binding", $scope.load);
 				$scope.$watch('binding', function() {
 					ngModelController.$setViewValue($scope.binding);
 				});
 
-				$scope.$watch("editor.visible", function(_new, _old) 
-				{ 
+				$scope.$watch("editor.visible", function(_new, _old)
+				{
 					if(_new!=_old &&  _new) {
 						var editor = $element.find("#editReference");
 						editor.modal("show");
@@ -1152,7 +1152,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					if(_new!=_old && !_new) $element.find("#editReference").modal("hide");
 				});
 			},
-			controller: ["$scope", "authHttp", '$element', '$timeout', '$transclude', function ($scope, $http, $element, $timeout, $transclude) 
+			controller: ["$scope", "authHttp", '$element', '$timeout', '$transclude', function ($scope, $http, $element, $timeout, $transclude)
 			{
 				$scope.editor = {};
 				$scope.selected = -1;
@@ -1279,13 +1279,13 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 					$scope.save();
 				};
-				
+
 				//====================
 				//
 				//====================
 				$scope.loadAllReferences = function(reload)
 				{
-					if($scope.editor.references && !reload) 
+					if($scope.editor.references && !reload)
 						return;
 
 					$scope.isLoading = true;
@@ -1375,7 +1375,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//====================
 				//
 				//====================
-				$scope.editor.filterExcludeSelected = function(ref) 
+				$scope.editor.filterExcludeSelected = function(ref)
 				{
 					return !_.findWhere($scope.references, { identifier: ref.identifier });
 				}
@@ -1383,7 +1383,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//====================
 				//
 				//====================
-				$scope.editor.sortReference = function(ref) 
+				$scope.editor.sortReference = function(ref)
 				{
 					if($scope.orderByFn)
 						return $scope.orderByFn({reference : ref});
@@ -1399,7 +1399,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 	//
 	//
 	//============================================================
-	.directive('kmSelect', function () 
+	.directive('kmSelect', function ()
 	{
 		return {
 			restrict: 'EAC',
@@ -1418,7 +1418,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			  minimumFn    : "&minimum",
 			  maximumFn    : "&maximum",
 			},
-			link: function ($scope, $element, $attrs, ngModelController) 
+			link: function ($scope, $element, $attrs, ngModelController)
 			{
 			  $scope.identifier = null;
 			  $scope.rootItems  = null;
@@ -1464,12 +1464,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					}
 				 });
 
-			  
+
 			  $scope.$on('clearSelectSelection', function(){
 				 $scope.clearSelection();
 			  })
 			},
-			controller: ["$scope", "$q","$filter", "$timeout", function ($scope, $q, $filter, $timeout) 
+			controller: ["$scope", "$q","$filter", "$timeout", function ($scope, $q, $filter, $timeout)
 			{
 			  //==============================
 			  //
@@ -1550,7 +1550,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			  //==============================
 			  //
 			  //==============================
-			  $scope.getTitle = function(maxCount, truncate) 
+			  $scope.getTitle = function(maxCount, truncate)
 			  {
 				 if ($scope.__loading)
 					return "Loading...";
@@ -1577,7 +1577,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			  //==============================
 			  //
 			  //==============================
-			  $scope.getTitles = function() 
+			  $scope.getTitles = function()
 			  {
 				 return _.map($scope.getSelectedItems(), function(o) {
 					return $filter("lstring")(o.title || o.name, $scope.locale);
@@ -1587,7 +1587,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			  //==============================
 			  //
 			  //==============================
-			  $scope.getMinimum = function() 
+			  $scope.getMinimum = function()
 			  {
 				 var value = $scope.minimumFn();
 
@@ -1600,7 +1600,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			  //==============================
 			  //
 			  //==============================
-			  $scope.getMaximum = function() 
+			  $scope.getMaximum = function()
 			  {
 				 var value = $scope.maximumFn();
 
@@ -1627,7 +1627,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			  //==============================
 			  //
 			  //==============================
-			  $scope.load = function() 
+			  $scope.load = function()
 			  {
 				 if (!$scope.allItems) // Not initialized
 					return;
@@ -1652,7 +1652,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			  //==============================
 			  //
 			  //==============================
-			  $scope.save = function() 
+			  $scope.save = function()
 			  {
 				 if (!$scope.allItems) // Not initialized
 					return;
@@ -1786,16 +1786,16 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				ngDisabledFn : '&ngDisabled',
 				placeholder  : "@",
 			},
-			link: function ($scope, $element, $attrs, ngModelController) 
+			link: function ($scope, $element, $attrs, ngModelController)
 			{
 				//$scope.value = false;
-				
+
 			},
-			controller: ["$scope", function ($scope) 
+			controller: ["$scope", function ($scope)
 			{
 				$scope.$watch('value', function(oldValue, newValue){
 					if(oldValue!=undefined)
-						$scope.binding = newValue;				
+						$scope.binding = newValue;
 				});
 
 			}]
@@ -1821,14 +1821,14 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				required     : "@"
 			},
 			link: {},
-			controller: ["$scope",  function ($scope) 
+			controller: ["$scope",  function ($scope)
 			{
 				//==============================
 				//
 				//==============================
 				$scope.isRequired = function()
 				{
-					return $scope.required!=undefined 
+					return $scope.required!=undefined
 						&& $.isEmptyObject($scope.binding);
 				}
 			}]
@@ -1859,7 +1859,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					$element.find('input').focus();
 				});
 			},
-			controller: ["$scope", function ($scope) 
+			controller: ["$scope", function ($scope)
 			{
 			}]
 		};
@@ -1879,7 +1879,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			scope: {
 				getDocumentFn : '&document'
 			},
-			link: function ($scope, $element) 
+			link: function ($scope, $element)
 			{
 				$scope.errors              = null;
 
@@ -1941,7 +1941,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				});
 
 				qSaveDialog.on('hidden.bs.modal' ,function() {
-					
+
 					$timeout(function(){
 
 						var promise = null;
@@ -1951,7 +1951,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				});
 
 				qCancelDialog.on('shown.bs.modal' ,function() {
-					
+
 					$timeout(function(){
 
 						var promise = null;
@@ -1970,7 +1970,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					});
 				});
 			},
-			controller: ["$scope", "IStorage", "editFormUtility", function ($scope, storage, editFormUtility) 
+			controller: ["$scope", "IStorage", "editFormUtility", function ($scope, storage, editFormUtility)
 			{
 				//====================
 				//
@@ -1990,30 +1990,30 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 						var a = storage.documents.exists(identifier).then(function(exist){
 
-							var q = exist 
+							var q = exist
 								  ? storage.documents.security.canUpdate(document.header.identifier, schema)
 								  : storage.documents.security.canCreate(document.header.identifier, schema);
 
-							return q.then(function(allowed) { 
-								$scope.security.canSave = allowed 
+							return q.then(function(allowed) {
+								$scope.security.canSave = allowed
 							});
 						})
 
 						var b = storage.drafts.exists(identifier).then(function(exist){
 
-							var q = exist 
+							var q = exist
 								  ? storage.drafts.security.canUpdate(document.header.identifier, schema)
 								  : storage.drafts.security.canCreate(document.header.identifier, schema);
 
-							return q.then(function(allowed) { 
-								$scope.security.canSaveDraft = allowed 
+							return q.then(function(allowed) {
+								$scope.security.canSaveDraft = allowed
 							});
 						})
 
 						return $q.all([a,b]);
 
 					}).finally(function(){
-						
+
 						$scope.loading = false;
 					});
 				}
@@ -2037,20 +2037,20 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 							throw "Invalid document";
 
 						//Has validation errors ?
-						if(validationReport && validationReport.errors && validationReport.errors.length>0) { 
-							
+						if(validationReport && validationReport.errors && validationReport.errors.length>0) {
+
 							$scope.$emit("documentInvalid", validationReport);
 						}
 						else return $q.when(editFormUtility.publish(document)).then(function(documentInfo) {
-							
+
 							if(documentInfo.type='authority'){
 								//in case of authority save the CNA as a contact in drafts
 								saveAuthorityInContacts(documentInfo);
 							}
 							$scope.$emit("documentPublished", documentInfo, document);
-							return documentInfo;						
+							return documentInfo;
 
-						});						
+						});
 					}).catch(function(error){
 
 						$scope.$emit("documentError", { action: "publish", error: error })
@@ -2081,8 +2081,8 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 							throw "Invalid document";
 
 						//Has validation errors ?
-						if(validationReport && validationReport.errors && validationReport.errors.length>0) { 
-							
+						if(validationReport && validationReport.errors && validationReport.errors.length>0) {
+
 							$scope.$emit("documentInvalid", validationReport);
 						}
 						else return $q.when(editFormUtility.publishRequest(document)).then(function(workflowInfo) {
@@ -2090,11 +2090,11 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 							if(workflowInfo.type='authority'){
 								//in case of authority save the CNA as a contact in drafts
 								saveAuthorityInContacts(workflowInfo);
-							}													
+							}
 							$scope.$emit("documentPublishRequested", workflowInfo, document)
 							return workflowInfo;
 
-						});						
+						});
 					}).catch(function(error){
 
 						$scope.$emit("documentError", { action: "publishRequest", error: error })
@@ -2125,12 +2125,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						if(draftInfo.type=='authority'){
 							//in case of authority save the CNA as a contact in drafts
 							saveAuthorityInContacts(draftInfo);
-						}					
+						}
 						$scope.$emit("documentDraftSaved", draftInfo)
 						return draftInfo;
 
 					}).catch(function(error){
-						
+
 						$scope.$emit("documentError", { action: "saveDraft", error: error })
 
 					}).finally(function(){
@@ -2141,7 +2141,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				};
 
 				saveAuthorityInContacts = function(draftInfo){
-					
+
 					var document = $scope.getDocumentFn();
 					if(!document)
 						document = draftInfo;
@@ -2163,9 +2163,9 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 						id = id.substr(0, id.length-1) + 'C'
 
-						var qDocument = {															
-											header: {	
-														identifier : id,											
+						var qDocument = {
+											header: {
+														identifier : id,
 														schema   : "contact",
 														languages: ["en"]
 													},
@@ -2173,18 +2173,18 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 											government : document.government,
 											source: id,
 											organization : document.name,
-											organizationAcronym:{en:'NA'},	
+											organizationAcronym:{en:'NA'},
 											city : document.city,
 											country : document.country,
 											phones : document.phones,
 											emails : document.emails
-										}	
+										}
 
 						if(document.address)qDocument.address = document.address;
-						if(document.state)qDocument.state = document.state;	
+						if(document.state)qDocument.state = document.state;
 						if(document.postalCode)qDocument.postalCode = document.postalCode;
 						if(document.websites)qDocument.websites = document.websites;
-						if(document.faxes)qDocument.faxes = document.faxes;		
+						if(document.faxes)qDocument.faxes = document.faxes;
 
 						editFormUtility.saveDraft(qDocument);
 					});
@@ -2200,7 +2200,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						$scope.$emit("documentClosed")
 
 					}).catch(function(error){
-						
+
 						$scope.$emit("documentError", { action: "close", error: error })
 
 					}).finally(function(){
@@ -2223,7 +2223,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						return storage.documents.validate(document);
 
 					}).then(function(result) {
-					
+
 						return result.data || result;
 					});
 				}
@@ -2231,7 +2231,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//====================
 				//
 				//====================
-				$scope.checkErrors = function() 
+				$scope.checkErrors = function()
 				{
 					$scope.errors = "";
 
@@ -2242,7 +2242,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//====================
 				//
 				//====================
-				$scope.closeDialog = function() 
+				$scope.closeDialog = function()
 				{
 					return $q.all([$scope.showSaveDialog(false), $scope.showCancelDialog(false)]).finally(function(){
 						$scope.loading = false;
@@ -2269,11 +2269,11 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			},
 			controller: ["$scope", "IStorage", function ($scope, storage) {
 				$scope.locales = [
-					{identifier:"ar", name:"Arabic"  }, 
-					{identifier:"en", name:"English" }, 
-					{identifier:"es", name:"Spanish" }, 
-					{identifier:"fr", name:"French"  }, 
-					{identifier:"ru", name:"Russian" }, 
+					{identifier:"ar", name:"Arabic"  },
+					{identifier:"en", name:"English" },
+					{identifier:"es", name:"Spanish" },
+					{identifier:"fr", name:"French"  },
+					{identifier:"ru", name:"Russian" },
 					{identifier:"zh", name:"Chinese" }
 				];
 
@@ -2333,7 +2333,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				}
 
 			},
-			controller: ["$scope", function ($scope) 
+			controller: ["$scope", function ($scope)
 			{
 				//====================
 				//
@@ -2375,7 +2375,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 	{
 		return {
 			restrict: 'A',
-			link: function ($scope, $element, $attr) 
+			link: function ($scope, $element, $attr)
 			{
 				//==============================
 				//
@@ -2420,7 +2420,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				caption   : '@caption',
 				isValidFn : "&isValid"
 			},
-			link: function ($scope, $element, $attr) 
+			link: function ($scope, $element, $attr)
 			{
 				if ($attr.isValid) {
 					$scope.hasError = function() { return false; }
@@ -2441,12 +2441,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				}
 
 			},
-			controller: ["$scope", function ($scope) 
+			controller: ["$scope", function ($scope)
 			{
 				$scope.hasWarning = function() {  //default behavior
 
 					if($scope.name && $scope.$parent && $scope.$parent.validationReport && $scope.$parent.validationReport.warnings) {
-						
+
 						return !!_.findWhere($scope.$parent.validationReport.warnings, { property : $scope.name })
 					}
 
@@ -2454,7 +2454,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				}
 
 				$scope.hasError = function() {  //default behavior
-					
+
 					if($scope.name && $scope.$parent && $scope.$parent.validationReport && $scope.$parent.validationReport.errors) {
 
 						return !!_.findWhere($scope.$parent.validationReport.errors, { property : $scope.name })
@@ -2518,8 +2518,8 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
       templateUrl: '/afc_template/options.html',
 		controller: function($scope, $element, $attrs, $transclude, Localizer) {
 			for(var key in $scope.options)
-	  			$scope.options[key] = Localizer.phrase($scope.options[key]); 
-	  			
+	  			$scope.options[key] = Localizer.phrase($scope.options[key]);
+
 			$('select', $element).each(function() {
 				for(var i in $attrs)
 					if(i.substr(0,1) != '$' && !$scope[i] && i != 'ngModel')
@@ -2645,6 +2645,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
   		  minchars: '@?',
   		  selectbox: '@?',
 		  multiple: '@?',
+		  ngDisabledFn : "&ngDisabled",
       },
       templateUrl: '/afc_template/afc-autocomplete.html',
 		controller: function($scope, $element, $attrs, $compile, $timeout) {
@@ -2652,7 +2653,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			$scope.source().then(function(items) {
 				$scope.items = items;
 			});
-			
+
 			$scope.bindingDisplay = ""; //so the display won't be empty.
 			$scope.displaySpans = [];
 
@@ -2664,9 +2665,9 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					return item.__value;
 				};
 
-			if(typeof $scope.maxmatches == 'undefined') $scope.maxmatches = 7; 
+			if(typeof $scope.maxmatches == 'undefined') $scope.maxmatches = 7;
 			else if($scope.maxmatches <= 0)	$scope.maxmatches = 999999;
-			if(typeof $scope.minchars == 'undefined') $scope.minchars = 1; 
+			if(typeof $scope.minchars == 'undefined') $scope.minchars = 1;
 			if(typeof $scope.selectbox == 'undefined') $scope.selectbox = false;
 			var maxmatches = $scope.maxmatches;
 			var minchars = $scope.minchars;
@@ -2697,7 +2698,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 								$scope.binding = $scope.mapping(item);
 						});
 					}
-					
+
 					//reselected the one we had selected if possible.
 					if($scope.selected != -1) {
 						var i;
@@ -2710,7 +2711,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 							$scope.selected = 0;
 					}
 					//else, if we have results and we didn't have anything selected, then select first item.
-					else if($scope.displayItems.length !== 0) 
+					else if($scope.displayItems.length !== 0)
 						$scope.selected = 0;
 
 					selectWatch($scope.displayItems[$scope.selected]);
@@ -2982,7 +2983,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 	//============================================================
 	//
-	// 
+	//
 	//
 	//============================================================
 	.filter("term", ["$http", '$filter', function($http, $filter) {
@@ -3191,11 +3192,11 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					var oTrans = transformPath(serviceUrls.documentUrl(), params);
 
 					return $http.head(oTrans.url, { params : oTrans.params, cache:useCache }).then(function() {
-						
+
 						return true;
-						
+
 					}).catch(function(error) {
-						
+
 						if(error.status!="404")
 							throw "Error";
 
@@ -3286,7 +3287,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					params.$filter    = query;
 
 					var useCache = !!params.cache;
-					
+
 					if(!params.cache)
 						params.cache = true;
 
@@ -3334,11 +3335,11 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					var oTrans = transformPath(serviceUrls.draftUrl(), params);
 
 					return $http.head(oTrans.url, {  params : oTrans.params, cache:useCache }).then(function() {
-						
+
 						return true;
-						
+
 					}).catch(function(error) {
-						
+
 						if(error.status!="404")
 							throw "Error";
 
@@ -3583,7 +3584,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 		}();
 	}])
 
-  .factory('authentication', ["$http", "$browser", function($http, $browser) { 
+  .factory('authentication', ["$http", "$browser", function($http, $browser) {
 
 		var currentUser = null;
 
@@ -3632,7 +3633,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 	.factory('authHttp', ["$http", "$browser", function($http, $browser) {
 
 		function addAuthentication(config) {
-		
+
 			if(!config)         config         = {};
 			if(!config.headers) config.headers = {};
 

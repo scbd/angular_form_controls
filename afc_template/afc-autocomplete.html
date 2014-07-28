@@ -1,15 +1,22 @@
 		 <div class="input-group">
 		    <span class="input-group-addon" style="padding: 0px" ng-repeat="(i, display) in displaySpans track by $index">
-				 <input type="text" ng-model="displaySpans[i]" ng-blur="updateSpan(i, displaySpans[i])"><a ng-click="removeSpan(i)" class="glyphicon glyphicon-remove"></a>
+				 <input type="text" ng-model="displaySpans[i]" ng-blur="updateSpan(i, displaySpans[i])"
+				><a ng-click="removeSpan(i)" class="glyphicon glyphicon-remove"></a>
 			 </span>
-			 <input {{required}} type="{{type}}" class="form-control" id="{{title}}" placeholder="{{placeholder | localize}}" ng-model="bindingDisplay" ng-keydown="keydown($event)" ng-keyup="keyup($event)" ng-focus="keydown($event)" ng-blur="hideOptions()" ng-click="toggleOptions()">
+			 <input {{required}} type="{{type}}" class="form-control" id="{{title}}" placeholder="{{placeholder | localize}}"
+			 ng-model="bindingDisplay" ng-keydown="keydown($event)" ng-keyup="keyup($event)" ng-focus="keydown($event)"
+			ng-blur="hideOptions()" ng-click="toggleOptions()" ng-class="{disabled:ngDisabledFn()}" ng-disabled="ngDisabledFn()">
 			 <span class="input-group-btn">
-				 <button type="button" class="btn btn-default" ng-click="toggleOptions(true);" ng-blur="hideOptions()" tabindex="-1">
+				 <button type="button" class="btn btn-default" ng-click="toggleOptions(true);" ng-disabled="ngDisabledFn()"
+				ng-blur="hideOptions()" tabindex="-1" ng-class="{disabled:ngDisabledFn()}">
 					 <span class="glyphicon glyphicon-chevron-down"></span>
 				 </button>
 			 </span>
 		 </div>
 		 <div style="display: none; position: absolute; z-index: 9999; background-color: white; max-height: 300px; overflow: auto;" class="list-group">
-			 <a ng-repeat="item in buttonOverrideFilter(bindingDisplay, items)" ng-click="clickSelected($index)" ng-mouseover="updateSelected($index)" class="list-group-item" ng-class="{'list-group-item-info': selected == $index, 'list-group-item-success': displaySpans.indexOf(item.__value)!=-1}">{{item.__value}}&nbsp;<span ng-show="displaySpans.indexOf(item.__value) != -1" class="glyphicon glyphicon-ok"></span></a>
+			 <a ng-repeat="item in buttonOverrideFilter(bindingDisplay, items)" ng-click="clickSelected($index)"
+			ng-mouseover="updateSelected($index)" class="list-group-item"
+			ng-class="{'list-group-item-info': selected == $index, 'list-group-item-success': displaySpans.indexOf(item.__value)!=-1}">{{item.__value}}&nbsp;
+			<span ng-show="displaySpans.indexOf(item.__value) != -1" class="glyphicon glyphicon-ok"></span></a>
 		 </div>
 		 <div ng-show="!hidePreview" compile="preview"></div>
