@@ -3,7 +3,7 @@
 	<span ng-hide="errors">
 
 		<input type="button" class="btn btn-warning" ng-click="showCancelDialog(true)" value="Cancel"/>
-		<input type="button" class="btn btn-primary" ng-click="showSaveDialog(true)" value="Save"  ng-disabled="!isUserAllowedToSave()" />
+		<input type="button" class="btn btn-primary" ng-click="showSaveDialog(true)" value="Save" />
 
 	</span>
 
@@ -27,7 +27,7 @@
 					<button type="button" ng-click="saveDraft()"      ng-disabled="loading || !security.canSaveDraft" class="btn btn-info"    >Save as draft</button>
 					<button type="button"                             ng-show="security.canSave===undefined" disabled class="btn btn-info"    >Save and publish</button>
 					<button type="button" ng-click="publish()"        ng-show="security.canSave!==undefined &&  security.canSave" ng-disabled="loading || !security.canSave" class="btn btn-primary" >Save and publish</button>
-					<button type="button" ng-click="publishRequest()" ng-show="security.canSave!==undefined && !security.canSave" ng-disabled="loading ||  security.canSave"  class="btn btn-primary" >Save and request publication</button>
+					<button type="button" ng-click="publishRequest()" ng-show="security.canSave!==undefined && (!security.canSave && security.canSaveDraft)" ng-disabled="loading ||  security.canSave"  class="btn btn-primary" >Save and request publication</button>
 				</div>
 			</div>
 		</div>
