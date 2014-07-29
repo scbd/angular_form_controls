@@ -2017,6 +2017,15 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						$scope.loading = false;
 					});
 				}
+				
+				$scope.isUserAllowedToSave = function(){
+
+					//console.log($scope.security)
+					if(!$scope.loading && (!$scope.security.canSaveDraft == undefined || $scope.security.canSave == undefined))
+						$scope.updateSecurity();
+
+					return $scope.security.canSaveDraft || $scope.security.canSave;
+				}
 
 				//====================
 				//
