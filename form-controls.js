@@ -2088,7 +2088,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						}
 						else return $q.when(editFormUtility.publishRequest(document)).then(function(workflowInfo) {
 
-							if(workflowInfo.type='authority'){
+							if(workflowInfo.type=='authority'){
 								//in case of authority save the CNA as a contact in drafts
 								saveAuthorityInContacts(workflowInfo);
 							}
