@@ -60,7 +60,7 @@
 						</div>
 
 					</fieldset>
-				</form>	      
+				</form>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default"             ng-click="editor.close()">Cancel</button>
@@ -90,7 +90,7 @@
 					  <div class="progress-bar"  role="progressbar" aria-valuenow="{{editor.progress.percent}}" aria-valuemin="0" aria-valuemax="100" style="width: {{editor.progress.percent}}%">
 					    <span class="sr-only">45% Complete</span>
 					  </div>
-					</div>					
+					</div>
 				</div>
 
 				<div ng-show="editor.progress.style=='complete'">
@@ -106,7 +106,7 @@
 			<form name="fileForm">
 			<fieldset>
 				<div ng-show="extensions">
-		
+
 					<div ng-repeat="ext in extensions"  ng-class="{error: fileForm[ext.model].$invalid}">
 						<label class="control-label" ng-required="ext.required">{{ext.title|lstring}}</label>
 						<select ng-model="$parent.editor.extensions[ext.model]" style="width:100%" ng-required="ext.required" ng-options="o.identifier as o.title|lstring for o in ext.options">
@@ -121,11 +121,11 @@
 	      </div>
 	      <div class="modal-footer">
 			<button type="button" class="btn btn-default" ng-click="editor.close()">Cancel</button>
-			<button type="button" class="btn btn-primary" ng-show="extensions" ng-click="fileForm.$invalid || editor.save()" ng-disabled="fileForm.$invalid" >Save</button>
+			<button type="button" class="btn btn-primary" ng-show="extensions" ng-click="fileForm.$invalid || editor.save()" ng-disabled="fileForm.$invalid || editor.progress.style=='active'" >Save</button>
 	      </div>
 	    </div><!-- /.modal-content -->
 	  </div><!-- /.modal-dialog -->
-	</div><!-- /.modal -->	
+	</div><!-- /.modal -->
 
     <!--File Upload Editor-->
 	<div  class="modal hide fade" >
