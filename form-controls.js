@@ -2812,6 +2812,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			};
 
 			$scope.buttonOverrideFilter = function() {
+				console.log('button override: ', $scope.buttonActivated);
 				if($scope.buttonActivated)
 					return $scope.items;
 				else
@@ -2846,11 +2847,14 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			$scope.delayHideOptions = function() {
 				$timeout(function() {
 					$scope.hideOptions();
-				}, 200);
+				}, 250);
 			};
 
 			$scope.updateHideOptions = function() {
-				$scope.buttonActivated = false;
+				//TODO: do this somehow with promises... this is just hacking around the event model with timeouts
+				$timeout(function() {
+					$scope.buttonActivated = false;
+				}, 150);
 				//Honestly... the browser should trigger all events, before evaluating them, and an event should definitely be able to trigger while it has display: none... grrr....
 				$timeout(function() {
 					if(!$scope.buttonActivated)
@@ -2886,7 +2890,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 							if(string != '') //we'll allow any option, but empty string.
 								$scope.binding.push(string);
 					}
-				}, 200);
+				}, 250);
 			};
 
 			$scope.updateSpan = function(index, string) {
@@ -2903,7 +2907,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					}
 
 					$scope.hideOptions();
-				}, 200);
+				}, 250);
 			};
 			////////////////////////END VISUALS
 
