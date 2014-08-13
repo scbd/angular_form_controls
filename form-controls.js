@@ -2649,7 +2649,300 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 		  ngDisabledFn : "&ngDisabled",
       },
       templateUrl: '/afc_template/afc-autocomplete.html',
-		controller: function($scope, $element, $attrs, $compile, $timeout) {
+		controller: function($scope, $element, $attrs, $compile, $timeout, $q) {
+			//////Event Code////////
+			$scope.updateSelected = function(index) {
+				$scope.selected = index;
+				if(index == -1)
+					$scope.current = {};
+				else
+					$scope.current = $scope.buttonOverrideFilter()[$scope.selected];
+			};
+
+			$scope.keydown = function($event, i) {
+				//TODO: don't switch up and down if we aren't showing results yet.
+				if($event.which == 38) {
+					if($scope.selected > 0)
+						$scope.updateSelected($scope.selected - 1);
+				}
+				else if($event.which == 40) {
+					if($scope.selected < ($scope.items.length - 1))
+						$scope.updateSelected($scope.selected + 1);
+				}
+				else if($event.which == 13) {
+					if($scope.filteredLength >= 1) {
+						$scope.enterSelected();
+					}
+					$event.preventDefault();
+					$scope.hideOptions();
+					$scope.dontDoFilterOptions = true;
+				}
+				else if($event.which == 9 || $event.which == 188) {
+					if($scope.filteredLength === 1) {
+						$scope.enterSelected();
+						if($scope.multiple) {
+							$event.preventDefault();
+							$scope.hideOptions();
+						}
+					}
+				} else
+					$scope.buttonActivated = false; //we are changing the filter, so we no longer want to show all results
+			};
+
+			$scope.keyup = function(query, $event) {
+				//hackish...
+				if($scope.dontDoFilterOptions)
+					return $scope.dontDoFilterOptions = false;
+
+				//if this is a single autocomplete, then maintain the binding
+				if(!$scope.multiple)
+					maintainBinding($scope, 'binding', $scope.bindingDisplay);
+
+				filterOptions(query).then(function(items) {
+					if(query.length >= minchars && $scope.filteredLength <= maxmatches || $scope.buttonActivated) //buttonActivated => only using arrow keys. Display hasn't changed
+						$scope.showOptions();
+					else
+						$element.find('.list-group').hide();
+				});
+			};
+
+			//only called when multiple = false
+			function maintainBinding(binding, bindingKey, displayBinding) {
+				filterOptions(displayBinding).then(function(items) {
+					//If a regular text box, then keep binding in sync with what is displayed.
+					if(!$scope.selectbox)
+						binding[bindingKey] = display[displayKey];
+
+					//if selectbox, first try and match for binding. Ie. non-multiple expects the binding to always be up to date.
+					if($scope.selectbox) {
+						_.each(items, function(item) {
+							if(item.__value.toLowerCase() === displayBinding.toLowerCase()) {
+								binding[bindingKey] = $scope.mapping(item);
+							}
+						});
+					}
+				});
+			}
+
+			$scope.spansKeyup = function(index) {
+				$scope.keyup($scope.displaySpans[index]);
+				maintainBinding($scope.binding, index, $scope.displaySpans[index]); 
+			};
+
+
+			/////ENTER CODE//////////
+			$scope.enterSelected = function($index) {
+				setBindingFromInput($scope.current);
+			};
+
+			var itemChosen = false;
+			$scope.clickSelected = function($index) {
+				itemChosen = true;
+
+				//Either the full list or the filtered list, depending on what is currently showing.
+				setBindingFromInput(
+					$scope.buttonOverrideFilter()[$index]
+				);
+			};
+
+			function setBindingFromInput(element) {
+				if($scope.multiple) {
+					toggleOption(element);	
+					$scope.bindingDisplay = '';
+				}
+				else
+					$scope.binding = $scope.mapping(element);
+
+				$scope.updateSelected(-1);
+			};
+
+			function toggleOption(element) {
+				var mapping = $scope.mapping(element);
+				var spliceIndex = indexOfPredicate($scope.binding, function(item) {
+					return _.isEqual(item, mapping);
+				});
+
+				if(spliceIndex != -1)
+					$scope.removeSpan(spliceIndex); //delete it, because we're "unselecting" it with a click.
+				else {
+					$scope.binding.push(mapping); //add what we clicked.
+					$scope.displaySpans.push(element.__value);
+				}
+			}
+			////////////END ENTER CODE
+
+			////////////////////////END EVENTS
+
+			//////Filter Functions//
+			var prevValue;
+			var deferred;
+			function filterOptions(query) {
+				//Do nothing if the value hasn't changed.
+				if(prevValue === query) {
+					return deferred.promise; //old promise
+				} else {
+					deferred = $q.defer();
+					prevValue = query;
+				}
+
+				//console.log('prev, cur: ', prevValue, query);
+				$scope.source().then(function(items) {
+					$scope.displayItems = $scope.filter(query, items);
+
+					//reselected the one we had selected if possible.
+					if($scope.selected != -1) {
+						var i;
+						for(i = 0; i != $scope.displayItems.length; ++i) {
+							if($scope.displayItems[i].__value == $scope.current.__value) {
+								$scope.updateSelected(i); break;
+							}
+						}
+
+						if(i === $scope.displayItems.length)
+							$scope.updateSelected(0);
+					}
+					//else, if we have results and we didn't have anything selected, then select first item.
+					else if($scope.displayItems.length !== 0)
+						$scope.updateSelected(0);
+
+					$scope.filteredLength = $scope.displayItems.length;
+					deferred.resolve($scope.displayItems);
+				});
+				return deferred.promise; //the promise we used.
+			};
+
+			$scope.buttonOverrideFilter = function() {
+				if($scope.buttonActivated)
+					return $scope.items;
+				else
+					return $scope.displayItems;
+			};
+			////////////////////////END FILTERS
+
+			//////Visual Functions//
+			$scope.removeSpan = function(index) {
+				$scope.binding.splice(index, 1);
+				$scope.displaySpans.splice(index, 1);
+			};
+
+			//Toggle whether or not to show the all options
+			$scope.toggleAllOptions = function(buttonActivate) {
+				if(buttonActivate)
+					//TODO: rename to 'showAll' or something
+					$scope.buttonActivated = true;
+				if($element.find('.list-group').is(':hidden') || $element.find('#'+$scope.title).is(':focus')) {
+					$scope.showOptions();
+				} else
+					$scope.hideOptions();
+			};
+			$scope.showOptions = function() {
+				$element.find('.list-group').show();
+			};
+			$scope.hideOptions = function() {
+				$element.find('.list-group').hide();
+				$scope.buttonActivated = false;
+			};
+
+			$scope.delayHideOptions = function() {
+				$timeout(function() {
+					$scope.hideOptions();
+				}, 200);
+			};
+
+			$scope.updateHideOptions = function() {
+				$scope.buttonActivated = false;
+				//Honestly... the browser should trigger all events, before evaluating them, and an event should definitely be able to trigger while it has display: none... grrr....
+				$timeout(function() {
+					if(!$scope.buttonActivated)
+						$scope.hideOptions();
+
+					if(itemChosen) {
+						itemChosen = false;
+						//we've already selected something, so we're done.
+						return;
+					}
+
+					//Now we need to update the binding, or add the item if need be.
+					var string = $scope.bindingDisplay;
+
+					//non-multiple selectboxes need to clear their binding if the display doesnt match anything
+					if(!$scope.multiple) {
+						if($scope.selectbox) {
+							if(reverseMap($scope.binding, $scope.items) !== $scope.bindingDisplay)
+								$scope.bindingDisplay = $scope.binding = null;
+						}
+					} else {	//Multiple
+						if($scope.selectbox)
+							$scope.source().then(function(results) {
+								for(var i=0; i!=results.length; ++i)
+									if(results[i].__value == string) {
+										$scope.binding.push(results[i]);
+										$scope.displaySpans.push(results[0].__value);
+									}
+
+								$scope.bindingDisplay = '';
+							});
+						else 
+							if(string != '') //we'll allow any option, but empty string.
+								$scope.binding.push(string);
+					}
+				}, 200);
+			};
+
+			$scope.updateSpan = function(index, string) {
+				$timeout(function() {
+					if($scope.selectbox) {
+						//if the display no longer represents the binding, then the binding is now invalidated, so clear.
+						if(reverseMap($scope.binding[index], $scope.items) !== string)
+							$scope.removeSpan(index);
+					} else {
+						if(string == '')
+							$scope.removeSpan(index);
+						else
+							$scope.binding[index] = string;
+					}
+
+					$scope.hideOptions();
+				}, 200);
+			};
+			////////////////////////END VISUALS
+
+			$scope.$watch('binding', function(newValue) {
+				if($scope.multiple) {
+					//if multiepl select box, then we need to revers map the displaySpan texts
+					if($scope.selectbox)
+						$scope.source().then(function(items) {
+							for(var i=0; i!=$scope.binding.length; ++i)
+								$scope.displaySpans[i] = reverseMap($scope.binding[i], items);
+						});
+					else {
+						//if regular multiple, then just directly put the displaySpans in as the bindings
+						for(var i=0; i!=$scope.binding.length; ++i)
+							$scope.displaySpans[i] = $scope.binding[i];
+					}
+
+				} else {
+					if($scope.selectbox)
+						$scope.source().then(function(items) {
+							$scope.bindingDisplay = reverseMap($scope.binding, items);
+						});
+					else
+						$scope.bindingDisplay = $scope.binding;
+				}
+			});
+
+			function reverseMap(value, items) {
+				var foundItem = '';
+				_.each(items, function(item) {
+					if(JSON.stringify($scope.mapping(item)) == JSON.stringify(value))
+						foundItem = item.__value;
+				});
+				//TODO: add error, for if no item matched
+
+				return foundItem;
+			};
+
+			//////Initializing//////
 			$scope.items = []; //start empty, but then attempt to fill it.
 			$scope.source().then(function(items) {
 				$scope.items = items;
@@ -2677,257 +2970,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			if($scope.multiple == 'true' && typeof $scope.binding == 'undefined')
 				$scope.binding = [];
 
-			$scope.current = {};
-			$scope.selected = -1;
-			var prevValue;
-			function filterOptions() {
-				if(prevValue === $scope.bindingDisplay)
-					return;
-				else
-					prevValue = $scope.bindingDisplay;
-
-				if(!$scope.selectbox && !$scope.multiple)
-					$scope.binding = $scope.bindingDisplay;
-
-				$scope.source().then(function(items) {
-					$scope.displayItems = $scope.filter($scope.bindingDisplay, items);
-
-					//if selectbox, first try and match for binding, or clear binding otherwise
-					if($scope.selectbox && !$scope.multiple) {
-						_.each(items, function(item) {
-							if(item.__value.toLowerCase() === $scope.bindingDisplay.toLowerCase())
-								$scope.binding = $scope.mapping(item);
-						});
-					}
-
-					//reselected the one we had selected if possible.
-					if($scope.selected != -1) {
-						var i;
-						for(i = 0; i != $scope.displayItems.length; ++i)
-							if($scope.displayItems[i].__value == $scope.current.__value) {
-								$scope.selected = i; break;
-							}
-
-						if(i === $scope.displayItems.length)
-							$scope.selected = 0;
-					}
-					//else, if we have results and we didn't have anything selected, then select first item.
-					else if($scope.displayItems.length !== 0)
-						$scope.selected = 0;
-
-					selectWatch($scope.displayItems[$scope.selected]);
-				});
-			};
-
-			$scope.removeSpan = function(index) {
-				$scope.binding.splice(index, 1);
-				$scope.displaySpans.splice(index, 1);
-			};
-
-			$scope.updateSelected = function(index) {
-				$scope.selected = index;
-			};
-			$scope.enterSelected = function($index) {
-				if($scope.multiple) {
-					$scope.binding.push($scope.mapping($scope.current));
-					$scope.displaySpans.push($scope.current.__value);
-				}
-				else
-					$scope.binding = $scope.mapping($scope.current);
-			};
-			function indexOfPredicate(array, predicate) {
-				for(var i=0; i!=array.length; ++i)
-					if(predicate(array[i]))
-						return i;
-
-				return -1;
-			}
-			$scope.clickSelected = function($index) {
-				//Either the full list or the filtered list, depending on what is currently showing.
-				var specialElement = $scope.buttonOverrideFilter($scope.bindingDisplay, $scope.items)[$index];
-				var mapping = $scope.mapping(specialElement);
-				if($scope.multiple) {
-					if((spliceIndex = indexOfPredicate($scope.binding, function(item) {
-								return _.isEqual(item, mapping);
-							})) != -1) {
-						$scope.removeSpan(spliceIndex);
-					} else {
-						$scope.binding.push(mapping);
-						$scope.displaySpans.push(specialElement.__value);
-					}
-				}
-				else
-					$scope.binding = $scope.mapping(specialElement);
-			};
-			$scope.keydown = function($event) {
-				//TODO: don't switch up and down if we aren't showing results yet.
-				if($event.which == 38) {
-					if($scope.selected > 0)
-						selectWatch(--$scope.selected);
-				}
-				else if($event.which == 40) {
-					if($scope.selected < ($scope.items.length - 1))
-						selectWatch(++$scope.selected);
-				}
-				else if($event.which == 13) {
-					$scope.enterSelected();
-					$event.preventDefault();
-					$scope.hideOptions();
-				}
-				else if($event.which == 9 && $event.which == 188) {
-					if($scope.filteredLength === 1) {
-						$scope.enterSelected();
-						if($scope.multiple) {
-							$event.preventDefault();
-							$scope.hideOptions();
-						}
-					}
-				}
-			};
-			$scope.keyup = function($event) {
-				if($scope.bindingDisplay.length >= minchars && $scope.filteredLength <= maxmatches)
-					$scope.showOptions();
-				else
-					$element.find('.list-group').hide();
-
-				filterOptions();
-			};
-			//TODO: is this function really necessary?
-			//Toggle whether or not to show the options
-			$scope.toggleOptions = function(buttonActivate) {
-				if(buttonActivate && !$scope.buttonActivated) {
-					$scope.buttonActivated = true;
-					$scope.showOptions();
-				} else
-					$element.find('.list-group').hide();
-			};
-			$scope.showOptions = function() {
-				$element.find('.list-group').show();
-			};
-			//TODO: rename to updateHideOptions
-			$scope.hideOptions = function() {
-				//TODO: do this better... but it requires a bunch of work
-				//Honestly... the browser should trigger all events, before evaluating them, and an event should definitely be able to trigger while it has display: none... grrr....
-				$timeout(function() {
-					$scope.buttonActivated = false;
-					$element.find('.list-group').hide();
-
-					var string = $scope.bindingDisplay;
-					if(!$scope.multiple) {
-						if($scope.selectbox) {
-							$scope.binding = null;
-							var changed = false;
-							_.each($scope.items, function(item) {
-								if(item.__value.toLowerCase() === $scope.bindingDisplay.toLowerCase()) {
-									$scope.binding = $scope.mapping(item);
-									changed = true;
-								}
-							});
-							if(!changed)
-								$scope.binding = null;
-						}
-
-						return;
-					}
-
-					//for multiple only. For single, the binding is constantly updated.
-					if($scope.selectbox)
-						$scope.source().then(function(items) {
-							var results = $scope.filter(string, items);
-							if(results.length === 1 && results[0].__value == string) {
-								$scope.binding.push = results[0];
-								$scope.displaySpans.push(results[0].__value);
-							}
-							else if(results.length > 1)
-								for(var i=0; i!=results.length; ++i)
-									if(results[i].__value == string)
-										$scope.binding.push = results[i];
-
-							$scope.bindingDisplay = '';
-					});
-					else
-						if(string != '')
-							$scope.binding.push(string);
-
-				}, 200);
-			};
-
-			var selectWatch = function(newValue) {
-				if($scope.selected != -1)
-				{
-					$scope.source().then(function(items) {
-						$scope.displayItems = $scope.filter($scope.bindingDisplay, items);
-
-						//shortcut... TODO: i dunno about this
-						$scope.filteredLength = $scope.displayItems.length;
-						$scope.current = $scope.displayItems[$scope.selected];
-					});
-				}
-			};
-
-			$scope.buttonOverrideFilter = function(bindingDisplay, items) {
-				if($scope.buttonActivated)
-					return items;
-				else
-					//return $scope.filter(bindingDisplay, items);
-					return $scope.displayItems;
-			};
-
-			function reverseMap(value, items) {
-					var foundItem = '';
-					_.each(items, function(item) {
-						if(JSON.stringify($scope.mapping(item)) == JSON.stringify(value))
-							foundItem = item.__value;
-					});
-					//TODO: add error, for if no item matched
-
-					return foundItem;
-			};
-
-			$scope.updateSpan = function(index, string) {
-				if($scope.selectbox)
-					$scope.source().then(function(items) {
-						var results = $scope.filter(string, items);
-						if(results.length === 1 && results[0].__value == string)
-							return $scope.binding[index] = results[0];
-						else if(results.length > 1)
-							for(var i=0; i!=results.length; ++i)
-								if(results[i].__value == string)
-									return $scope.binding[index] = results[i];
-
-						//if there was no match, then remove the item.
-						$scope.removeSpan(index);
-					});
-				else {
-					if(string == '')
-						$scope.removeSpan(index);
-					else
-						$scope.binding[index] = string;
-				}
-			};
-
-			$scope.$watch('binding', function(newValue) {
-				console.log('newValue: ', newValue);
-				if($scope.multiple) {
-					if($scope.selectbox)
-						$scope.source().then(function(items) {
-							for(var i=0; i!=$scope.binding.length; ++i)
-								$scope.displaySpans[i] = reverseMap($scope.binding[i], items);
-						});
-					else {
-						for(var i=0; i!=$scope.binding.length; ++i)
-							$scope.displaySpans[i] = $scope.binding[i];
-					}
-
-				} else {
-					if($scope.selectbox)
-						$scope.source().then(function(items) {
-							$scope.bindingDisplay = reverseMap($scope.binding, items);
-						});
-					else
-						$scope.bindingDisplay = $scope.binding;
-				}
-			});
+			$scope.updateSelected(-1);
 
 			//transfer attributes to the internal input
 			$('input', $element).each(function() {
@@ -2935,6 +2978,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					if(i.substr(0,1) != '$' && !$scope[i] && i != 'ngModel')
 						$(this).attr(i, $attrs[i]);
 			});
+			////////////////////////END INIT
 		},
 	 }
 	})
@@ -3657,5 +3701,24 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 		return authHttp;
 	}])
-
+	.directive('selectAllOnClick', function() {
+		return {
+			restrict: 'A',
+			link: function(scope, element, attrs) {
+				element.on('focus', function() {
+					console.log('selectAllOnClick');
+					this.setSelectionRange(0, 9999);
+				});
+			},
+		};
+	})
 ;
+
+//a helper function
+function indexOfPredicate(array, predicate) {
+	for(var i=0; i!=array.length; ++i)
+		if(predicate(array[i]))
+			return i;
+
+	return -1;
+}
