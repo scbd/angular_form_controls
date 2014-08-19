@@ -1877,11 +1877,13 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			replace: true,
 			transclude: true,
 			scope: {
-				getDocumentFn : '&document'
+				getDocumentFn : '&document',
+				hideSave 	  : '=?'
 			},
 			link: function ($scope, $element)
 			{
 				$scope.errors              = null;
+				$scope.hideSave = $scope.hideSave || false;
 
 				//BOOTSTRAP Dialog handling
 
