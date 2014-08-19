@@ -6,7 +6,8 @@
 					<a target="_blank" ng-href="{{link.url}}">{{link.name||link.url}}</a>
 					<span ng-repeat="ext in extensions">
 						<i ng-show="link[ext.model]">
-							({{( ext.options | filter: { identifier : link[ext.model] } )[0].title|lstring}})
+							({{link[ext.model].identifier}})
+							<!--({{( ext.options | filter: { identifier : link[ext.model] } )[0].title|lstring}})-->
 						</i>
 					</span>
 				</td>
@@ -53,9 +54,7 @@
 
 							<div ng-repeat="ext in extensions" ng-class="{error: linkForm[ext.model].$invalid}">
 								<label class="control-label" ng-required="ext.required">{{ext.title|lstring}}</label>
-								<select ng-model="$parent.editor.extensions[ext.model]" style="width:100%" ng-required="ext.required" ng-options="o.identifier as o.title|lstring for o in ext.options">
-									<option value="">{{o.placeholder}}</option>
-								</select>
+								<afc-autocomplete ng-model="$parent.editor.extensions[ext.model]" style="width:100%" ng-required="ext.required" source="ext.options" mapping="ext.mapping" selectbox="true"></afc-autocomplete>
 							</div>
 						</div>
 

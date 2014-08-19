@@ -124,13 +124,22 @@ app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', '$htt
 		return {identifier: item.identifier};
 	};
 
+	$scope.countriesExtensions = [{
+		model: 'country',
+		title: 'Country',
+		required: true,
+		options: $scope.ac_countries,
+		mapping: function(item) {
+			return {identifier: item.identifier};
+		},
+	}];
+
 	$scope.autocompleteQuery = function($query, items) {
 		var matchedOptions = [];
 		for(var i=0; i != items.length; ++i)
 			if(items[i].__value.toLowerCase().indexOf($query.toLowerCase()) !== -1)
 				matchedOptions.push(items[i]);
 
-		console.log('options: ', matchedOptions);
 		return matchedOptions;
 	};
 

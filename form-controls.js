@@ -693,7 +693,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 	//
 	//
 	//============================================================
-	.directive('kmLink', function ($http)
+	.directive('kmLink', function ($http, $q)
 	{
 		return {
 			restrict: 'EAC',
@@ -1172,15 +1172,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						$scope.editor.save();
 						$event.preventDefault();
 					}
-
-					console.log('selected:', $scope.selected);
 				};
 				$scope.$watch('selected', function(newValue) {
 					$element.find('.list-group-item-info').removeClass('list-group-item-info');
 					//TODO: set acOption as the row, so I can just reuse that class rather than having multiple [both acOptions and acCheckbox]
 					$element.find('.acOption'+$scope.selected).addClass('list-group-item-info');
 					$element.find('.acOptions'+$scope.selected + ' :checkbox').focus();
-					console.log($element.find('.acOption'+$scope.selected + ' :checkbox'));
 					//this is incase the item hasn't been rendered yet...
 					//we essentially just try again
 					$timeout(function() {
@@ -1338,7 +1335,6 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 								$scope.references = [];
 
 							$scope.references.push(oNewRef);
-							console.log('refs: ', $scope.references);
 							$scope.save();
 
 							if (!$scope.multiple)
@@ -2963,6 +2959,18 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			if(!$scope.mapping)
 				$scope.mapping = function(item) {
 					return item.__value;
+				};
+			if(!$scope.filter)
+				$scope.filter = function($query, items) {
+					console.log('items: ', items);
+					console.log('query: ', $query);
+					var matchedOptions = [];
+					for(var i = 0; i != items.length; ++i) //_value is always there.
+						if(items[i].__value.toLowerCase().indexOf($query.toLowerCase()) != -1)
+							matchedOptions.push(items[i]);
+
+					console.log('matched: ', matchedOptions);
+					return matchedOptions;	
 				};
 
 			if(typeof $scope.maxmatches == 'undefined') $scope.maxmatches = 7;
