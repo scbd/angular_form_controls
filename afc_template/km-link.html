@@ -35,14 +35,14 @@
 				<div class="alert alert-info">Please provide the URL of the website (e.g. <a target="_blank" href="http://www.cbd.int">http://www.cbd.int</a>) and the name of the website (e.g. "The Convention on Biological Diversity").</div>
 				<form name="linkForm">
 					<fieldset>
-						<div class="alert alert-warning" ng-show="linkForm.$error.url">
+						<div class="alert alert-warning" ng-show="linkForm.$error.pattern">
 							<h4>Warning!</h4>
 							Specified value is not a valid URL
 						</div>
 
 						<div class="control-group" ng-class="{error: linkForm.editor.url.$invalid}">
 							<label class="control-label" required for="url">Url</label>
-							<input type="url" style="width:98%" ng-model="editor.url" required placeholder="example: http://www.cbd.int">
+							<input type="text" style="width:98%" ng-model="editor.url" required ng-pattern="/^(\w+://)?(\w+\.)?[\w\-\._~]+\.\w{1,3}(/\w+)*(\?\w+=.*)?(&\w+=.*)*$/" placeholder="example: www.cbd.int">
 						</div>
 
 						<div class="control-group" ng-class="{error: linkForm.name.$invalid}">
