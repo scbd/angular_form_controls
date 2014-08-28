@@ -2724,7 +2724,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 			$scope.spansKeyup = function(index) {
 				$scope.keyup($scope.displaySpans[index]);
-				maintainBinding($scope.binding, index, $scope.displaySpans[index]); 
+				maintainBinding($scope.binding, index, $scope.displaySpans[index]);
 			};
 
 
@@ -2745,7 +2745,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 			function setBindingFromInput(element) {
 				if($scope.multiple) {
-					toggleOption(element);	
+					toggleOption(element);
 					$scope.bindingDisplay = '';
 				}
 				else
@@ -2884,7 +2884,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 								$scope.bindingDisplay = '';
 							});
-						else 
+						else
 							if(string != '') //we'll allow any option, but empty string.
 								$scope.binding.push(string);
 					}
@@ -3064,7 +3064,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			if(cacheMap[term.identifier])
 				return $filter("lstring")(cacheMap[term.identifier].title, locale) ;
 
-			cacheMap[term.identifier] = $http.get("/api/v2013/thesaurus/terms/"+encodeURIComponent(term.identifier),  {cache:true}).then(function(result) {
+			cacheMap[term.identifier] = $http.get("/api/v2013/thesaurus/terms?termCode="+encodeURIComponent(term.identifier),  {cache:true}).then(function(result) {
 
 				cacheMap[term.identifier] = result.data;
 
