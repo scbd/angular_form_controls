@@ -2709,7 +2709,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				filterOptions(displayBinding).then(function(items) {
 					//If a regular text box, then keep binding in sync with what is displayed.
 					if(!$scope.selectbox)
-						binding[bindingKey] = display[displayKey];
+						binding[bindingKey] = displayBinding;
 
 					//if selectbox, first try and match for binding. Ie. non-multiple expects the binding to always be up to date.
 					if($scope.selectbox) {
