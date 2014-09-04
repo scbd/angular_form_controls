@@ -779,7 +779,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 				}
 			},
-			controller: ["$scope", "IStorage", function ($scope, storage)
+			controller: ["$scope", "IStorage", "$filter", function ($scope, storage, $filter)
 			{
 				$scope.editor = {};
 
@@ -797,10 +797,20 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					var oNewLinks = [];
 
 					angular.forEach($scope.binding || [], function(link, i) {
+
 						oNewLinks.push(clone(link));
 					});
 
 					$scope.links = oNewLinks;
+				}
+
+				$scope.showModel = function(model, type){
+
+					if(type=='file'){
+						return $filter("term")(model);
+					}
+					else
+						return model;
 				}
 
 				//==============================
@@ -825,7 +835,6 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 							if (!val)
 								oNewLink[key] = undefined;
 						});
-
 						oNewBinding.push(oNewLink);
 					});
 
@@ -933,7 +942,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//==============================
 				//
 				//==============================
-				$scope.editor.save = function()
+				$scope.editor.save = function(type)
 				{
 					var oLink = { url:  $scope.editor.url };
 
@@ -941,7 +950,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						oLink.name = $scope.editor.name;
 
 					oLink = _.extend(oLink, clone($scope.editor.extensions));
-
+					oLink.type= type;
 					var iIndex = $scope.links.indexOf($scope.editor.link);
 
 					if(iIndex>=0) $scope.links.splice(iIndex, 1, oLink);
@@ -1091,6 +1100,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			}]
 		}
 	})
+
 
 	//============================================================
 	//
@@ -2913,10 +2923,13 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				if($scope.multiple) {
 					//if multiepl select box, then we need to revers map the displaySpan texts
 					if($scope.selectbox)
-						$scope.source().then(function(items) {
-							for(var i=0; i!=$scope.binding.length; ++i)
-								$scope.displaySpans[i] = reverseMap($scope.binding[i], items);
-						});
+						if(typeof $scope.source == 'function')
+							$scope.source().then(function(items) {
+								for(var i=0; i!=$scope.binding.length; ++i)
+									$scope.displaySpans[i] = reverseMap($scope.binding[i], items);
+							});
+						else
+							$scope.bindingDisplay = reverseMap($scope.binding, $scope.source);
 					else {
 						//if regular multiple, then just directly put the displaySpans in as the bindings
 						for(var i=0; i!=$scope.binding.length; ++i)
@@ -2925,13 +2938,17 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 				} else {
 					if($scope.selectbox)
-						$scope.source().then(function(items) {
-							$scope.bindingDisplay = reverseMap($scope.binding, items);
-						});
+						if(typeof $scope.source == 'function')
+							$scope.source().then(function(items) {
+								$scope.bindingDisplay = reverseMap($scope.binding, items);
+							});
+						else
+							$scope.bindingDisplay = reverseMap($scope.binding, $scope.source);
 					else
 						$scope.bindingDisplay = $scope.binding;
 				}
 			});
+
 
 			function reverseMap(value, items) {
 				var foundItem = '';
@@ -2970,7 +2987,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 							matchedOptions.push(items[i]);
 
 					console.log('matched: ', matchedOptions);
-					return matchedOptions;	
+					return matchedOptions;
 				};
 
 			if(typeof $scope.maxmatches == 'undefined') $scope.maxmatches = 7;

@@ -6,9 +6,10 @@
 					<a target="_blank" ng-href="{{link.url}}">{{link.name||link.url}}</a>
 					<span ng-repeat="ext in extensions">
 						<i ng-show="link[ext.model]">
-							({{link[ext.model].identifier}})
+							({{showModel(link[ext.model], link.type)}})
 							<!--({{( ext.options | filter: { identifier : link[ext.model] } )[0].title|lstring}})-->
 						</i>
+						<!-- <i ng-show="link.type!= 'file' && link[ext.model]">({{link[ext.model]}})</i> -->
 					</span>
 				</td>
 				<td style="text-align:end;white-space:nowrap">
@@ -54,7 +55,7 @@
 
 							<div ng-repeat="ext in extensions" ng-class="{error: linkForm[ext.model].$invalid}">
 								<label class="control-label" ng-required="ext.required">{{ext.title|lstring}}</label>
-								<afc-autocomplete ng-model="$parent.editor.extensions[ext.model]" style="width:100%" ng-required="ext.required" source="ext.options" mapping="ext.mapping" selectbox="true"></afc-autocomplete>
+								<afc-autocomplete ng-model="$parent.editor.extensions[ext.model]" style="width:100%" ng-required="ext.required" source="ext.options" mapping="ext.mapping" selectbox="true" ></afc-autocomplete>
 							</div>
 						</div>
 
@@ -63,7 +64,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default"             ng-click="editor.close()">Cancel</button>
-				<button type="button" class="btn btn-primary" ng-click="linkForm.$invalid || editor.save()" ng-disabled="linkForm.$invalid" >Save</button>
+				<button type="button" class="btn btn-primary" ng-click="linkForm.$invalid || editor.save('link')" ng-disabled="linkForm.$invalid" >Save</button>
 			</div>
 	    </div><!-- /.modal-content -->
 	  </div><!-- /.modal-dialog -->
@@ -120,7 +121,7 @@
 	      </div>
 	      <div class="modal-footer">
 			<button type="button" class="btn btn-default" ng-click="editor.close()">Cancel</button>
-			<button type="button" class="btn btn-primary" ng-show="extensions" ng-click="fileForm.$invalid || editor.save()" ng-disabled="fileForm.$invalid || editor.progress.style=='active'" >Save</button>
+			<button type="button" class="btn btn-primary" ng-show="extensions" ng-click="fileForm.$invalid || editor.save('file')" ng-disabled="fileForm.$invalid || editor.progress.style=='active'" >Save</button>
 	      </div>
 	    </div><!-- /.modal-content -->
 	  </div><!-- /.modal-dialog -->
@@ -139,7 +140,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" ng-click="editor.close()">Cancel</button>
-					<button type="button" class="btn btn-primary" ng-show="extensions" ng-click="fileForm.$invalid || editor.save()" ng-disabled="fileForm.$invalid" >Save</button>
+					<button type="button" class="btn btn-primary" ng-show="extensions" ng-click="fileForm.$invalid || editor.save('file')" ng-disabled="fileForm.$invalid" >Save</button>
 				</div>
 			</div>
 		</div>
