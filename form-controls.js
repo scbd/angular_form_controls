@@ -2794,7 +2794,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				}
 
 				//console.log('prev, cur: ', prevValue, query);
-				$scope.source().then(function(items) {
+				GetSourceItems().then(function(items) {
 					$scope.displayItems = $scope.filter(query, items);
 
 					//reselected the one we had selected if possible.
@@ -2818,9 +2818,17 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				});
 				return deferred.promise; //the promise we used.
 			};
-
+			function GetSourceItems(){
+				if(typeof $scope.source == 'function')
+					return $scope.source();
+				else{
+					var def = $q.defer();
+					def.resolve($scope.source);
+					return def.promise;
+				}
+			}
 			$scope.buttonOverrideFilter = function() {
-				console.log('button override: ', $scope.buttonActivated);
+				//console.log('button override: ', $scope.buttonActivated);
 				if($scope.buttonActivated)
 					return $scope.items;
 				else
@@ -2885,7 +2893,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 						}
 					} else {	//Multiple
 						if($scope.selectbox)
-							$scope.source().then(function(results) {
+							GetSourceItems().then(function(results) {
 								for(var i=0; i!=results.length; ++i)
 									if(results[i].__value == string) {
 										$scope.binding.push(results[i]);
@@ -2923,13 +2931,10 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				if($scope.multiple) {
 					//if multiepl select box, then we need to revers map the displaySpan texts
 					if($scope.selectbox)
-						if(typeof $scope.source == 'function')
-							$scope.source().then(function(items) {
+							GetSourceItems().then(function(items) {
 								for(var i=0; i!=$scope.binding.length; ++i)
 									$scope.displaySpans[i] = reverseMap($scope.binding[i], items);
 							});
-						else
-							$scope.bindingDisplay = reverseMap($scope.binding, $scope.source);
 					else {
 						//if regular multiple, then just directly put the displaySpans in as the bindings
 						for(var i=0; i!=$scope.binding.length; ++i)
@@ -2938,12 +2943,9 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 				} else {
 					if($scope.selectbox)
-						if(typeof $scope.source == 'function')
-							$scope.source().then(function(items) {
+						GetSourceItems().then(function(items) {
 								$scope.bindingDisplay = reverseMap($scope.binding, items);
 							});
-						else
-							$scope.bindingDisplay = reverseMap($scope.binding, $scope.source);
 					else
 						$scope.bindingDisplay = $scope.binding;
 				}
@@ -2963,7 +2965,9 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 			//////Initializing//////
 			$scope.items = []; //start empty, but then attempt to fill it.
-			$scope.source().then(function(items) {
+			//console.log(GetSourceItems());
+			GetSourceItems().then(function(items) {
+				//console.log(items , '2975');
 				$scope.items = items;
 			});
 
@@ -2979,14 +2983,14 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				};
 			if(!$scope.filter)
 				$scope.filter = function($query, items) {
-					console.log('items: ', items);
-					console.log('query: ', $query);
+					// console.log('items: ', items);
+					// console.log('query: ', $query);
 					var matchedOptions = [];
 					for(var i = 0; i != items.length; ++i) //_value is always there.
 						if(items[i].__value.toLowerCase().indexOf($query.toLowerCase()) != -1)
 							matchedOptions.push(items[i]);
 
-					console.log('matched: ', matchedOptions);
+					// console.log('matched: ', matchedOptions);
 					return matchedOptions;
 				};
 
