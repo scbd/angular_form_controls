@@ -13,6 +13,13 @@
 				 </button>
 			 </span>
 		 </div>
+
+		<style media="screen">
+				#listGroup{
+					max-width:95%;
+					min-width:80%;
+				}
+		</style>
 		 <div style="display: none; position: absolute; z-index: 9999; background-color: white; max-height: 300px; overflow: auto;" class="list-group">
 			 <a ng-repeat="item in buttonOverrideFilter(bindingDisplay, items)" ng-click="clickSelected($index)"
 			ng-mouseover="updateSelected($index)" class="list-group-item"
