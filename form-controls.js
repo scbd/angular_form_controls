@@ -265,7 +265,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 					angular.forEach(oLocales, function(locale, i)
 					{
-						if($.trim($(oText[locale]).text())!="")
+						if($("<i>").html(oText[locale]).text().trim()!="")
 							oNewBinding[locale] = oText[locale];
 					});
 
