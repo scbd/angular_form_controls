@@ -5,7 +5,7 @@
 				<td>
 					<div ng-show="!reference.__loading && !reference.__errorCode">
 						<div><strong>{{reference.title | lstring}}</strong>
-						<div>{{reference.summary | lstring}}</div>
+							<div ng-bind-html="reference.summary | lstring"></div>
 					</div>
 
 					<div ng-show="reference.__loading">
@@ -54,7 +54,7 @@
 							</td>
 							<td class="reference-summary-cell">
 								<div><strong>{{reference.title | lstring}}</strong>
-								<div>{{reference.summary | lstring}}</div>
+									<div ng-bind-html="reference.summary | lstring"></div>
 							</td>
 						</tr>
 
@@ -71,7 +71,7 @@
 
 				</div>
 				<div class="modal-footer">
-					
+
 					<div class="row">
 
 					<div class="col-sm-8">
