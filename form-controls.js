@@ -1107,7 +1107,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 								},
 								function(result) { //error
 									link.url = result.data.url;
-									$scope.editor.onUploadError(link, result.data);
+									$scope.editor.onUploadError(link, result);
 								},
 								function(progress) { //progress
 									$scope.editor.onUploadProgress(link, progress);
@@ -1161,9 +1161,14 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					if($scope.editor.link!=link)
 						return;
 
-					console.log('xhr.upload error: ' + message)
-
-					$scope.editor.error = message;
+					console.log('xhr.upload error: ' , message)
+					if(message.status == 401)
+						$scope.editor.error = 'Unauthorised access, please make sure you are logged in.'
+					else if(message.status == 413)
+						$scope.editor.error = 'File too big, maxium file size allowed is 20 MB.'
+					else
+						$scope.editor.error = 'There was a error uploading your file, please try again.'
+						//message.data;
 
 					if($scope.editor.progress)
 						$scope.editor.progress.style   = "error";
