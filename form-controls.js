@@ -1100,6 +1100,11 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 								size: file.size
 							}
 
+							if((file.size/(1024*1024)).toFixed(2)>20){
+
+								$scope.editor.onUploadError(link, {'status' : 413});
+								return;
+							}
 							storage.attachments.put($scope.identifier, file).then(
 								function(result) { //success
 									link.url = result.url;
