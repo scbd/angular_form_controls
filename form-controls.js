@@ -2729,12 +2729,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			$scope.newMarker = function() {
 				if(marker)
 					map.removeLayer(marker);
-				marker = new L.Marker({lat: $scope.binding.lat, lng: $scope.binding.lon});
+				marker = new L.Marker({lat: $scope.binding.lat, lng: $scope.binding.lng});
 				map.addLayer(marker);
 			};
 			map.on('click', function(e) {
 				$scope.binding.lat = e.latlng.lat;
-				$scope.binding.lon = e.latlng.lng;
+				$scope.binding.lng = e.latlng.lng;
 				$scope.$apply(); //necessary, because we aren't in an angular event
 
 				$scope.newMarker();
