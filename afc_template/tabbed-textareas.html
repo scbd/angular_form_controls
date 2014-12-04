@@ -18,7 +18,7 @@
 <div class="tabbed-textareas-inputs">
 	<span ng-repeat="tab in tabs">
 		<span class="tab{{tab[keyKey]}} tabbed-textarea">
-			<p>{{tab[helpKey] | localize}}</p>
+			<p ng-bind-html="tab[helpKey] | localize | to_trusted"></p>
 			<textarea class="form-control textarea{{tab[keyKey]}}" rows="{{rows || 4}}" ng-model="binding[tab[keyKey]]" ng-keydown="overwriteKeys($event, $index)" ng-blur="maybeHide($event, $index)"></textarea>
 		</span>
 	</span>
