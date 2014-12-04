@@ -182,7 +182,7 @@ app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', '$htt
 	$scope.inputs = {
 		tabs: [
 			{title: 'first tab', key: 'first',},
-			{title: 'second tab', key: 'second', help: 'this is some text and stuff and junk and whatever and stuff and junk and ya much more than you would think would be a thing with the wrandom'},
+			{title: 'second tab', key: 'second', help: '<strong>this</strong> is some text and stuff and junk and whatever and stuff and junk and ya much more than you would think would be a thing with the wrandom'},
 			{title: 'third tab', key: 'third',},
 		],
 	};

@@ -3855,6 +3855,11 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			},
 		};
 	})
+    .filter('to_trusted', function($sce){
+        return function(html) {
+            return $sce.trustAsHtml(html);
+        };
+    })
 ;
 
 //a helper function
