@@ -2716,12 +2716,16 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
       templateUrl: '/afc_template/lonlat.html',
 		controller: function($scope, $element, $attrs, $transclude) {
 			if(typeof $scope.binding === 'undefined')
-	  			$scope.binding = {};
+	  			$scope.binding = {zoom: 1};
 
 			var map = L.map('map', {
 				center: [30, 15],
-				zoom: 1,
+				zoom: $scope.binding.zoom,
 				scrollWheelZoom: false,
+			});
+			map.on('zoomend', function(e) {
+			    $scope.binding.zoom = map.getZoom();
+			    $scope.$digest(); //necessary for some reason? Stupid Angular.
 			});
 			L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
@@ -2730,6 +2734,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				if(marker)
 					map.removeLayer(marker);
 				marker = new L.Marker({lat: $scope.binding.lat, lng: $scope.binding.lng});
+				map.setZoom($scope.binding.zoom);
 				map.addLayer(marker);
 			};
 			map.on('click', function(e) {
