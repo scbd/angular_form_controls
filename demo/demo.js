@@ -83,6 +83,7 @@ app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', '$htt
 		openArray: [],
 	};
 	$scope.demoObject.openArray[30] = '';
+	$scope.demoObject.openArray[7] = {lng: 22, lat: 22, zoom: 5};
 
 	$scope.terms = function() {
 		return $q.all([$http.get("/api/v2013/thesaurus/domains/50616B56-12F3-4C46-BC43-2DFC26679177/terms", {cache: true})]).then(function(result) {

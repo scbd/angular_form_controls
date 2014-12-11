@@ -2710,22 +2710,21 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
     return {
       restrict: 'AEC',
       scope: {
-		  binding: "=ngModel",
+		binding: "=ngModel",
         help: '@',
       },
       templateUrl: '/afc_template/lonlat.html',
 		controller: function($scope, $element, $attrs, $transclude) {
-			if(typeof $scope.binding === 'undefined')
-	  			$scope.binding = {zoom: 1};
-
 			var map = L.map('map', {
 				center: [30, 15],
-				zoom: $scope.binding.zoom,
+				zoom: 1,
 				scrollWheelZoom: false,
 			});
 			map.on('zoomend', function(e) {
 			    $scope.binding.zoom = map.getZoom();
-			    $scope.$digest(); //necessary for some reason? Stupid Angular.
+			    
+	  		    if($scope.$$phase)
+			        $scope.$digest(); //necessary for some reason? Stupid Angular.
 			});
 			L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
@@ -2736,6 +2735,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				marker = new L.Marker({lat: $scope.binding.lat, lng: $scope.binding.lng});
 				map.setZoom($scope.binding.zoom);
 				map.addLayer(marker);
+	  		    map.setView({lat: $scope.binding.lat, lng: $scope.binding.lng}, $scope.binding.zoom);
 			};
 			map.on('click', function(e) {
 				$scope.binding.lat = e.latlng.lat;
@@ -2750,6 +2750,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					if(i.substr(0,1) != '$' && !$scope[i] && i != 'ngModel' && i != 'id')
 						$(this).attr(i, $attrs[i]);
 			});
+			if(typeof $scope.binding === 'undefined')
+	  			$scope.binding = {zoom: 1};
+	  		else {
+	  		    $scope.newMarker();
+	  		    map.setView({lat: $scope.binding.lat, lng: $scope.binding.lng}, $scope.binding.zoom);
+	  		}
 		},
     };
   })
