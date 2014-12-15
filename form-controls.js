@@ -2711,6 +2711,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
       restrict: 'AEC',
       scope: {
 		binding: "=ngModel",
+		mapReference: "=?",
         help: '@',
       },
       templateUrl: '/afc_template/lonlat.html',
@@ -2720,6 +2721,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				zoom: 1,
 				scrollWheelZoom: false,
 			});
+			$scope.mapReference = map;
 			map.on('zoomend', function(e) {
 			    $scope.binding.zoom = map.getZoom();
 			    

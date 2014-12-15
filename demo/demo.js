@@ -3,6 +3,10 @@
 var app = angular.module('AngularFormControls', ['formControls', 'ngTagsInput', 'ngCookies', 'ngLocalizer']);
 
 app.controller('DemoController', ['$scope', '$q', '$cookies', 'Localizer', '$http', 'IStorage', function($scope, $q, $cookies, Localizer, $http, storage) {
+    $scope.$watch('mapref', function() {
+        console.log('mapref: ', $scope.mapref);
+    });
+		    
 	$cookies.language = 'fr';
 	Localizer.setDictionary({
 		'the title': {
