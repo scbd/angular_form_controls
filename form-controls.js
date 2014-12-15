@@ -2659,6 +2659,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
   			  helpKey: "@",
   			  keyKey: "@",
   			  titleKey: "@",
+  			  placeholder: "@",
 			},
   			templateUrl: '/afc_template/tabbed-textareas.html',
   			controller: function($scope, $element, $attrs, $transclude) {
@@ -2673,6 +2674,8 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 	  				console.log(message, $scope.binding);
 	  				throw message + $scope.binding;
 				}
+				if(!$scope.placeholder)
+				    $scope.placeholder = 'Enter text here';
 
   				$scope.isValid = function(key) {
 					return ($scope.binding[key] && $scope.binding[key].length > 20);
