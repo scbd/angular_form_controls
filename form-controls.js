@@ -2730,6 +2730,11 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			});
 			L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
+            $scope.$watch('binding', function() {
+                if($scope.binding.lat && $scope.binding.lng)
+                    $scope.newMarker();
+            }, true);
+
 			var marker;
 			$scope.newMarker = function() {
 				if(marker)
