@@ -3426,7 +3426,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 					var oTrans = transformPath(serviceUrls.documentUrl(), params);
 
-					return $http.put(oTrans.url, data, { "params" : oTrans.params, headers: {realm: defaultRealm} }).then(function(result){
+					return $http.put(oTrans.url, data, { "params" : oTrans.params}).then(function(result){
 						return result.data;
 					});
 				},
@@ -3569,7 +3569,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 					var oTrans = transformPath(serviceUrls.draftUrl(), params);
 
-					return $http.put(oTrans.url, data, { "params" : oTrans.params, headers: {realm: defaultRealm} }).then(function(result){
+					return $http.put(oTrans.url, data, { "params" : oTrans.params }).then(function(result){
 						return result.data;
 					});
 				},
