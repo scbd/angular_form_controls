@@ -2591,6 +2591,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
         title: '@',
         help: '@',
         placeholder: '@',
+        name: '@?',
       },
       templateUrl: '/afc_template/string.html',
   		controller: function($scope, $element, $attrs) {
@@ -2611,6 +2612,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
         placeholder: '@',
         rows: '@',
         help: '@',
+        name: '@?',
       },
       templateUrl: '/afc_template/text.html',
   		controller: function($scope, $element, $attrs) {
@@ -2631,6 +2633,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
         title: '@',
         placeholder: '@',
         help: '@',
+        name: '@?',
       },
       templateUrl: '/afc_template/options.html',
 		controller: function($scope, $element, $attrs, $transclude, Localizer) {
