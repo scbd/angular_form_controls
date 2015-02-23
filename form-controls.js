@@ -2784,6 +2784,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
   		  selectbox: '@?',
 		  multiple: '@?',
 		  ngDisabledFn : "&ngDisabled",
+          windowsScrollbarCompatible: '@?',
       },
       templateUrl: '/afc_template/afc-autocomplete.html',
 		controller: function($scope, $element, $attrs, $compile, $timeout, $q) {
@@ -2990,9 +2991,10 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			};
 
 			$scope.delayHideOptions = function() {
-				$timeout(function() {
-					$scope.hideOptions();
-				}, 250);
+			    if(!$scope.windowsScrollbarCompatible)
+				    $timeout(function() {
+					    $scope.hideOptions();
+				    }, 250);
 			};
 
 			$scope.updateHideOptions = function() {
