@@ -3169,6 +3169,22 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
   	 };
   })
 
+    .directive('expandableText', function() {
+        return function($scope, $element) {
+            $element.bind('focus', function() {
+                this.rows = 4;
+                this.dataset.width = this.style.width;
+                this.style.width = '400px';
+                this.style.display = 'block';
+            });
+            $element.bind('blur', function() {
+                this.rows = 1;
+                this.style.width = this.dataset.width;
+                this.style.display = 'inline';
+            });
+        };
+    })
+
 	.directive('compile', function($compile) {
 	  // directive factory creates a link function
 	  return {
