@@ -2613,6 +2613,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
         rows: '@',
         help: '@',
         name: '@?',
+        preview: '@?',
       },
       templateUrl: '/afc_template/text.html',
   		controller: function($scope, $element, $attrs) {
@@ -3209,6 +3210,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			 );
 		  },
 	  };
+	})
+
+	.filter("toTrusted", function($sce) {
+	    return function(value) {
+	        return $sce.trustAsHtml(value);
+	    };
 	})
 
 	//============================================================
