@@ -2664,6 +2664,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
   			  keyKey: "@",
   			  titleKey: "@",
   			  placeholder: "@",
+              preview: '@?',
 			},
   			templateUrl: '/afc_template/tabbed-textareas.html',
   			controller: function($scope, $element, $attrs, $transclude) {

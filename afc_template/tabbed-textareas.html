@@ -19,7 +19,11 @@
 	<span ng-repeat="tab in tabs">
 		<span class="tab{{tab[keyKey]}} tabbed-textarea">
 			<p ng-bind-html="tab[helpKey] | localize | to_trusted"></p>
-			<textarea class="form-control textarea{{tab[keyKey]}}" rows="{{rows || 4}}" ng-model="binding[tab[keyKey]]" ng-keydown="overwriteKeys($event, $index)" ng-blur="maybeHide($event, $index)" placeholder="{{tab.placeholder || placeholder}}"></textarea>
+			<textarea class="form-control textarea{{tab[keyKey]}}" ng-focus="focused=true" rows="{{rows || 4}}" ng-model="binding[tab[keyKey]]" ng-keydown="overwriteKeys($event, $index)" ng-blur="maybeHide($event, $index); focused=false;" placeholder="{{tab.placeholder || placeholder}}"></textarea>
+			<div ng-show="preview && focused">
+			    <h3 style="margin-left: 40px;">{{tab[titleKey]}} Preview</h3>
+			    <p style="padding-left: 10px; border: dotted 1px gray;" ng-bind-html="binding[tab[keyKey]] | toTrusted"></p>
+			</div>
 		</span>
 	</span>
 </div>

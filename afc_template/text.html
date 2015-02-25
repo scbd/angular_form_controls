@@ -5,4 +5,7 @@
       <p ng-show="help" class="help-block">{{help | localize}}</p>
     </div>
   </div>
-  <p class="col-sm-12" ng-show="preview && focused" ng-bind-html="binding | toTrusted"></p>
+  <div class="form-group" ng-show="preview && focused">
+      <h4 style="margin-left: 40px;">{{title}} Preview</h4>
+      <p class="col-sm-12" ng-bind-html="binding | toTrusted" style="border: dotted 1px gray"></p>
+  </div>
