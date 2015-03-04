@@ -2591,6 +2591,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
         title: '@',
         help: '@',
         placeholder: '@',
+        name: '@?',
       },
       templateUrl: '/afc_template/string.html',
   		controller: function($scope, $element, $attrs) {
@@ -2611,6 +2612,8 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
         placeholder: '@',
         rows: '@',
         help: '@',
+        name: '@?',
+        preview: '@?',
       },
       templateUrl: '/afc_template/text.html',
   		controller: function($scope, $element, $attrs) {
@@ -2631,6 +2634,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
         title: '@',
         placeholder: '@',
         help: '@',
+        name: '@?',
       },
       templateUrl: '/afc_template/options.html',
 		controller: function($scope, $element, $attrs, $transclude, Localizer) {
@@ -2660,6 +2664,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
   			  keyKey: "@",
   			  titleKey: "@",
   			  placeholder: "@",
+              preview: '@?',
 			},
   			templateUrl: '/afc_template/tabbed-textareas.html',
   			controller: function($scope, $element, $attrs, $transclude) {
@@ -2784,6 +2789,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
   		  selectbox: '@?',
 		  multiple: '@?',
 		  ngDisabledFn : "&ngDisabled",
+          windowsScrollbarCompatible: '@?',
       },
       templateUrl: '/afc_template/afc-autocomplete.html',
 		controller: function($scope, $element, $attrs, $compile, $timeout, $q) {
@@ -2990,9 +2996,10 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			};
 
 			$scope.delayHideOptions = function() {
-				$timeout(function() {
-					$scope.hideOptions();
-				}, 250);
+			    if(!$scope.windowsScrollbarCompatible)
+				    $timeout(function() {
+					    $scope.hideOptions();
+				    }, 250);
 			};
 
 			$scope.updateHideOptions = function() {
@@ -3164,6 +3171,22 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
   	 };
   })
 
+    .directive('expandableText', function() {
+        return function($scope, $element) {
+            $element.bind('focus', function() {
+                this.rows = 4;
+                this.dataset.width = this.style.width;
+                this.style.width = '400px';
+                this.style.display = 'block';
+            });
+            $element.bind('blur', function() {
+                this.rows = 1;
+                this.style.width = this.dataset.width;
+                this.style.display = 'inline';
+            });
+        };
+    })
+
 	.directive('compile', function($compile) {
 	  // directive factory creates a link function
 	  return {
@@ -3188,6 +3211,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			 );
 		  },
 	  };
+	})
+
+	.filter("toTrusted", function($sce) {
+	    return function(value) {
+	        return $sce.trustAsHtml(value);
+	    };
 	})
 
 	//============================================================
