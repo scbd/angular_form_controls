@@ -2686,6 +2686,12 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 					return ($scope.binding[key] && $scope.binding[key].length > 20);
 				};
 
+				$scope.toggleFocus = function() {
+				    $timeout(function() {
+				        $scope.focused = !$scope.focused;
+				    }); //this is cause Angular is trash and causes a digest clash between to states being changes in a digest cycle from two different spots.
+				};
+
   				$scope.showTab = function($event, $index, key) {
 					var root = $($event.target).parent().parent().parent();
 
