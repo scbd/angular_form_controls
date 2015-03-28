@@ -2892,6 +2892,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				setBindingFromInput(
 					$scope.buttonOverrideFilter()[$index]
 				);
+				$scope.hideOptions();
 			};
 
 			function setBindingFromInput(element) {
