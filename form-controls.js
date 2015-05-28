@@ -2416,13 +2416,17 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				report : '=ngModel',
 			},
 			link: function ($scope, $element, $attr) {
-
+				$scope.onLoad = true;
 				//====================
 				//
 				//====================
 				$scope.jumpTo = function(field) {
 
 					var qLabel = $element.parents("[km-tab]:last").parent().find("form[name='editForm'] label[for='" + field + "']:first");
+
+					if(qLabel.length==0)//handle for abs as abs has the validation directive on edit instead of view form;
+						qLabel = $element.parent().find("form[name='editForm'] label[for='" + field + "']:first");
+
 					var sTab   = qLabel.parents("[km-tab]:first").attr("km-tab");
 
 					if (sTab) {
@@ -2443,11 +2447,19 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 
 					var qLabel = $element.parents("[km-tab]:last").parent().find("form[name='editForm'] label[for='" + field + "']:first");
 
+					if(qLabel.length==0)//handle for abs as abs has the validation directive on edit instead of view form;
+						qLabel = $element.parent().find("form[name='editForm'] label[for='" + field + "']:first");
+
 					if (qLabel.size() != 0)
 						return qLabel.text();
 
 					return field;
 				}
+
+	            $scope.$watch('report', function(newVal,oldVal){
+	                if(newVal||oldVal)
+	                    $scope.onLoad = false;
+	            })
 
 			},
 			controller: ["$scope", function ($scope)
@@ -2456,6 +2468,10 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//
 				//====================
 				$scope.isValid = function() {
+
+                	if($scope.report && $scope.report.clearErrors)
+                    	return false;
+
 					return $scope.report && (!$scope.report.errors || $scope.report.errors.length == 0);
 				}
 
@@ -2463,6 +2479,10 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 				//
 				//====================
 				$scope.hasErrors = function() {
+
+	                if($scope.report && $scope.report.clearErrors)
+	                    return false;
+
 					return $scope.report && $scope.report.errors && $scope.report.errors.length != 0;
 				}
 
@@ -2732,7 +2752,7 @@ angular.module('formControls',['ngLocalizer', 'ngSanitize',])
 			$scope.mapReference = map;
 			map.on('zoomend', function(e) {
 			    $scope.binding.zoom = map.getZoom();
-			    
+
 	  		    if($scope.$$phase)
 			        $scope.$digest(); //necessary for some reason? Stupid Angular.
 			});
